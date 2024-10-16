@@ -1,0 +1,196 @@
+spring:
+ application.name: xyz-enrolment-service
+ # Set the following property to "none" or "validate" in a prod environment
+ jpa:
+  hibernate:
+   ddl-auto: validate
+  
+  properties: 
+   hibernate:
+    dialect: org.hibernate.dialect.MySQLDialect
+    boot.allow_jdbc_metadata_access: false
+    
+ flyway:
+  enabled: false
+  
+   
+ datasource:
+  url: jdbc:mysql://localhost:3307/xyz_unversity
+  username: david
+  password: david123
+  # Wait for 60 seconds during startup to establish db connection
+  hikari.initializationFailTimeout: 60000
+ 
+server:
+ port: 7003
+ error.include-message: always
+ 
+
+logging:
+ level:
+  root: INFO
+  com.david.microservices.alpha: DEBUG
+  org.hibernate.SQL: DEBUG
+  org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+  
+
+api:
+ common:
+  title: Student Service API
+  description: This is a Student Service API that is used to handle student validations and handle payment notifications
+  version: 1.0.0
+  
+  termsOfService: https://david-matu.github.io/alpha-microservices/terms-of-service
+  license: General Usage License
+  licenseUrl: https://david-matu.github.io/alpha-microservices/license
+  
+  externalDocDesc: Find out the public info about this API
+  externalDocUrl: https://david-matu.github.io/alpha-microservices
+  
+  contact:
+   name: David Matu
+   url: https://david-matu.github.io
+   email: davidmatu817@gmail.com
+   
+ responseCodes:
+  ok.description: OK
+  badRequest.description: Bad Request, invalid format of the request. See response message for more information 
+  notFound.description: Not found. The specified id does not exist 
+  unprocessableEntity.description: Uprocessable entity, input parameters caused the processing to fail. See response message for more information
+ 
+ enrolment:
+  get-student:
+   summary: Get a Student record by passing ID
+   description: |
+    # Normal response
+    200 - OK - When a Student is returned, it indicates payment can be made for them since they are active
+    
+    200 - OK - but empty object
+    This is the case when the StudentID does not reflect a particular Student record, or the Student is no longer marked _ACTIVE_ in the institution
+    
+ product-composite: 
+  get-composite-product:
+   description: Returns a composite view of the specified product id
+   notes: |
+    # Normal response
+    If the requested product id is found, the method will return information regarding:
+    1. Base product information
+    2. Reviews
+    3. Recommendations
+    4. Service Addresses\n(technical information regarding the addresses pf the microservices that created the response)
+    
+    # Expected partial and error responses
+    
+    ## Product id 113
+    200 - OK, but ni recommendations will be returned
+    
+    ## Product id 213
+    200 - OK, but no reviews will be returned
+    
+    ## Non-numerical product-id
+    400 - A **Bad Request** error will be returned
+    
+    ## Product id 13
+    404 - A **Not FOund** error will be returned
+    
+    ## Negative product ids
+    422 - An **Unprocessable Entity** error will be returned
+  
+  create-composite-product:
+   description: Creates a composite product
+   notes: |
+    # Normal response
+    The composite product information posted to the API will be split up and stored as separate product-info, recommendation and review entities.
+    
+    # Expected error responses
+    1. If a product with the same productId as specified in the posted information already exists, a **422** - **Unprocessable Entity** error with a "duplicate key" error message will be returned
+    
+  delete-product-composite:
+   description: Deletes a product composite
+   notes: |
+    # Normal response
+    Entities for product information, recommendations and reviews related to te specified productId will be deleted.
+    
+    The implementation of the delete method is indempotent -- it can be called several times with the same response.
+    
+    This means that a delete request for a non-existing product will return**200 Ok**.
+   
+springdoc:
+ swagger-ui.path: /openapi/swagger-ui.html
+ api-docs.path: /openapi/v3/api-docs
+ packagesToScan: edu.xyz.services
+ pathsToMatch: /**
+ 
+
+spring.cloud.function.definition: messageProcessor
+
+spring.cloud.stream:
+  defaultBinder: rabbit
+  default.contentType: application/json
+  bindings.messageProcessor-in-0:
+    destination: reviews
+    group: studentServiceAuditGroup
+
+spring.cloud.stream.bindings.messageProcessor-in-0.consumer:
+  maxAttempts: 3
+  backOffInitialInterval: 500
+  backOffMaxInterval: 1000
+  backOffMultiplier: 2.0
+
+spring.cloud.stream.rabbit.bindings.messageProcessor-in-0.consumer:
+  autoBindDlq: true
+  republishToDlq: true
+  
+spring.rabbitmq:
+  host: 127.0.0.1
+  port: 5672
+  username: user
+  password: user
+  
+---
+spring:
+ config.activate.on-profile: docker
+ 
+ datasource:
+  url: jdbc:mysql://mysql:3306/xyz_unversity
+  username: david
+  password: david123
+  hikari:
+   schema: xyz_unversity
+ 
+ # flyway will use above datasource to connect
+ flyway:
+  enabled: true
+  locations: classpath:db/migrations
+  validate-on-migrate: true
+  default-schema: xyz_unversity
+  
+spring.rabbitmq.host: rabbitmq
+
+server:
+ port: 8080
+
+---
+spring.config.activate.on-profile: streaming_partitioned
+
+spring.cloud.stream.bindings.messageProcessor-in-0.consumer:
+  partitioned: true
+  instanceCount: 2
+
+---
+spring.config.activate.on-profile: streaming_instance_0
+
+spring.cloud.stream.bindings.messageProcessor-in-0.consumer.instanceIndex: 0
+
+---
+spring.config.activate.on-profile: streaming_instance_1
+
+spring.cloud.stream.bindings.messageProcessor-in-0.consumer.instanceIndex: 1
+
+---
+spring.config.activate.on-profile: kafka
+
+management.health.rabbit.enabled: false
+spring.cloud.stream.defaultBinder: kafka
+spring.kafka.bootstrap-servers: kafka:9092
+spring.cloud.stream.kafka.binder.replication-factor: 1

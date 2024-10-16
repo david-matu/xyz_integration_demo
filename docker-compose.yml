@@ -1,0 +1,43 @@
+# version: '2.1'
+
+services:
+  xyz-enrolment-service:
+    build: microservices/xyz-enrolment-service
+    mem_limit: 512m
+    ports:
+      - "9000:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+     mysql:
+      condition: service_healthy
+     rabbitmq:
+      condition: service_healthy
+      
+  mysql:
+   image: mysql:8.0.32
+   mem_limit: 512m
+   ports:
+    - "3306-3306"
+   environment:
+    - MYSQL_ROOT_PASSWORD=dbpwd
+    - MYSQL_DATABASE=xyz_unversity
+    - MYSQL_USER=david
+    - MYSQL_PASSWORD=david123
+   healthcheck:
+    test: "/usr/bin/mysql --user=david --password=david123 --execute \"SHOW DATABASES;\""
+    interval: 5s
+    timeout: 2s
+    retries: 60
+
+  rabbitmq:
+   image: rabbitmq:3.11.8-management
+   mem_limit: 512m
+   ports:
+    - 5672:5672
+    - 15672:15672
+   healthcheck:
+    test: ["CMD", "rabbitmqctl", "status"]
+    interval: 5s
+    timeout: 2s
+    retries: 60
