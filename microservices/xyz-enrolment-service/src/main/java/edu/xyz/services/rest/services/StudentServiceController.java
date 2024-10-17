@@ -10,13 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.messaging.Message;
-import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.web.bind.annotation.RestController;
 
 import edu.xyz.services.api.core.enrolment.Student;
 import edu.xyz.services.api.core.enrolment.StudentService;
-import edu.xyz.services.api.events.Event;
 import edu.xyz.services.api.exceptions.InvalidInputException;
 import edu.xyz.services.api.exceptions.NotFoundException;
 import edu.xyz.services.rest.persistence.StudentEntity;
@@ -37,9 +34,6 @@ public class StudentServiceController implements StudentService {
 	
 	private final Scheduler jdbcScheduler;
 	
-	// Define a stream bridge that will send messages out to the messaging systems
-	private final StreamBridge streamBridge;
-	
 	/**
 	 * All args constructor
 	 * 
@@ -49,19 +43,37 @@ public class StudentServiceController implements StudentService {
 	 * @param serviceUtil
 	 */
 	@Autowired
-	public StudentServiceController(@Qualifier("jdbcScheduler") Scheduler jdbcScheduler, StudentRepository repo, StudentMapper mapper, ServiceUtil serviceUtil, StreamBridge streamBridge) {
+	public StudentServiceController(
+			@Qualifier("jdbcScheduler") Scheduler jdbcScheduler, 
+			StudentRepository repo, StudentMapper mapper, ServiceUtil serviceUtil, StreamBridge streamBridge) {
 		this.jdbcScheduler = jdbcScheduler;
 		this.serviceUtil = serviceUtil;
 		this.mapper = mapper;
 		this.repo = repo;
-		this.streamBridge = streamBridge;
 	}
 	
 	/**
-	 * This resource will consume message from queue for CREATE events
+	 * This resource will send CREATE event for Student to the messaging system
+	 * 
 	 */
 	@Override
 	public Mono<Student> addStudent(Student body) {
+		
+		// return Mono.fromCallable(() -> internalCreateStudent(body))
+		/*
+		return Mono.fromCallable(() -> {
+			
+			sendMessage("students-out-0", new Event(CREATE, body.getStudentID(), body));
+			return body;
+		}).subscribeOn(publishEventScheduler);
+		*/
+		
+		// LOG.info("Saving student record to database: {}", body.getStudentID());
+		
+		// StudentEntity entity = mapper.apiToEntity(body);
+		// StudentEntity saveEntity = repo.save(entity);
+		
+		LOG.info("Saved student record to database: {}", body.getStudentID());
 		
 		return Mono.fromCallable(() -> internalCreateStudent(body))
 				.subscribeOn(jdbcScheduler);
@@ -127,10 +139,11 @@ public class StudentServiceController implements StudentService {
 	}
 	
 	/**
+	 *	Commenting because this instance is already a message a consumer
 	 * 
-	 * @param bindingName
-	 * @param event
-	 */
+	 *	@param bindingName
+	 * 	@param event
+	 *
 	private void sendMessage(String bindingName, Event event) {
 		LOG.debug("Sending a {} message to {}", event.getEventType(), bindingName);
 		
@@ -140,4 +153,5 @@ public class StudentServiceController implements StudentService {
 		
 		streamBridge.send(bindingName, msg);
 	}
+	*/
 }

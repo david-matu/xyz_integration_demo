@@ -73,4 +73,42 @@ This is a Gradle-built project that runs on Docker swarm
 #### API Documentation
 After the services are up, access the documentation on the browser at:
 
-[http://localhost:9000/openapi/swagger-ui.html](http://localhost:9000/openapi/swagger-ui.html)  
+[http://localhost:9000/openapi/swagger-ui.html](http://localhost:9000/openapi/swagger-ui.html)
+
+#### Logs from Nodes:
+In advanced stage of this project, the logs can be shipped to `ELK`. At the moment, for simplicity, we can monitor logs per node on the terminal like so:
+
+In the project root directory:
+```sh
+# Append -f flag to display them as they happen 
+docker compose logs xyz-enrolment-service -f
+
+docker compose logs xyz-gateway-service
+
+docker compose logs mysql
+
+docker compose logs rabbit
+```
+> Take note that the names are as they were baptised in the `docker-compose-file`
+
+
+#### Monitoring
+Nodes can be best monitored by services such as ``Prometheus`` and ``Grafana``, to show their health statuses.
+
+At the moment, for simplicity reasons, the apis are equipped with a healthcheck capability 
+which is aggregated by a selected api (on gateway) and returned as a single object showing how each service is faring
+
+#### Interacting with the Nodes: databases, Rabbit, microservices:
+
+For each of the instances, ensure you are in the project's root directory (where ```docker-compose``` resides
+
+
+1. __mysql__
+```sh
+docker compose exec mysql mysql -udavid -p
+
+# Password is david123
+```  
+
+
+

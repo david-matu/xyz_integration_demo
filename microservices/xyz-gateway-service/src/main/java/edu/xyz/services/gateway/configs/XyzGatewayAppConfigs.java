@@ -1,4 +1,4 @@
-package edu.xyz.services.rest.config;
+package edu.xyz.services.gateway.configs;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -10,10 +10,9 @@ import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
 
-//@Configuration
-public class EnrolmentServiceConfigs {
+@Configuration
+public class XyzGatewayAppConfigs {
 	
-	/*
 	@Value("${api.common.title}") String apiTitle;
 	@Value("${api.common.description}") String apiDescription;
 	@Value("${api.common.version}") String apiVersion;
@@ -45,5 +44,4 @@ public class EnrolmentServiceConfigs {
 							.url(apiExternaDocUrl));
 					
 	}
-	*/
 }

@@ -24,6 +24,7 @@ public interface StudentService {
 	 * @param studentId
 	 * @return
 	 */
+	/*
 	@Operation(
 			summary = "${api.enrolment.get-student.summary}",
 			description = "${api.enrolment.get-student.description}")
@@ -32,13 +33,15 @@ public interface StudentService {
 			@ApiResponse(responseCode = "400", description = "${api.responseCodes.badRequest.description}"),
 			@ApiResponse(responseCode = "404", description = "${api.responseCodes.notFound.description}"),
 	})
-	@GetMapping(value = "/xyz/services/student/{studentId}", produces = "application/json")
+	*/
+	
+	@GetMapping(value = "/students/{studentId}", produces = "application/json")
 	Mono<Student> getStudent(@PathVariable String studentId);
 	
 	// For administrative or internal operations, we can define the CREATE and DELETE, UPDATE operations on Student records
-	@PostMapping(value = "/xyz/services/student", consumes = "application/json", produces = "application/json")
+	@PostMapping(value = "/students", consumes = "application/json", produces = "application/json")
 	Mono<Student> addStudent(@RequestBody Student body);
 	
-	@GetMapping(value = "/xyz/services/students", produces = "application/json")
+	@GetMapping(value = "/students", produces = "application/json")
 	Flux<Student> getStudentList();
 }

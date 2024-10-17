@@ -67,7 +67,7 @@ api:
     
     200 - OK - but empty object
     This is the case when the StudentID does not reflect a particular Student record, or the Student is no longer marked _ACTIVE_ in the institution
-
+  
   add-student:
    summary: Add new Student
    description: Create Student profile in the database
@@ -76,27 +76,20 @@ api:
    summary: Fetch all Students
    description: Returns a list of all students available,  and who are capable of being identified with payments made for
    
-        
 springdoc:
- swagger-ui.path: /xyz-core/openapi/swagger-ui.html
- api-docs.path: /xyz-core/openapi/v3/api-docs
- packagesToScan: edu.xyz.services
+ swagger-ui.path: /openapi/swagger-ui.html
+ api-docs.path: /openapi/v3/api-docs
+ packagesToScan: edu.xyz.services.gateway
  pathsToMatch: /**
-
+ 
 spring.cloud.stream:
  defaultBinder: rabbit
  default.contentType: application/json
- bindings.messageProcessor-in-0:
-  destination: studentq
-  group: studentAuditGroup
- 
- bindings.messageProcessor-in-0.consumer:
-  maxAttempts: 3
-  backOffInitialInterval: 500
-  backOffMaxInterval: 1000
-  backOffMultiplier: 2.0
-  autoBindDlq: true
-  republishToDlq: true
+ bindings:
+  students-out-0:
+   destination: studentq
+   producer:
+    required-groups: studentAuditGroup
   
 spring.rabbitmq:
   host: 127.0.0.1
@@ -104,44 +97,30 @@ spring.rabbitmq:
   username: guest
   password: guest
   
+app:
+ student-service:
+  host: xyz-enrolment-service
+  port: 8080
+  
 ---
-server.port: 8080
-
 spring:
  config.activate.on-profile: docker
- 
- datasource:
-  url: jdbc:mysql://mysql:3306/xyz_unversity
-  username: david
-  password: david123
-  hikari:
-   schema: xyz_unversity
- 
- # flyway will use above datasource to connect
- flyway:
-  enabled: true
-  locations: classpath:db/migrations
-  validate-on-migrate: true
-  default-schema: xyz_unversity
   
 spring.rabbitmq.host: rabbitmq
+
+server.port: 8080
+
+app:
+ student-service:
+  host: xyz-enrolment-service
+  port: 8080
 
 ---
 spring.config.activate.on-profile: streaming_partitioned
 
-spring.cloud.stream.bindings.messageProcessor-in-0.consumer:
-  partitioned: true
-  instanceCount: 2
-
----
-spring.config.activate.on-profile: streaming_instance_0
-
-spring.cloud.stream.bindings.messageProcessor-in-0.consumer.instanceIndex: 0
-
----
-spring.config.activate.on-profile: streaming_instance_1
-
-spring.cloud.stream.bindings.messageProcessor-in-0.consumer.instanceIndex: 1
+spring.cloud.stream.bindings.students-out-0.producer:
+  partition-key-expression: headers['partitionKey']
+  partition-count: 1
 
 ---
 spring.config.activate.on-profile: kafka

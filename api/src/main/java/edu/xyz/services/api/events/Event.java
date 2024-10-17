@@ -9,7 +9,7 @@ import com.fasterxml.jackson.datatype.jsr310.ser.ZonedDateTimeSerializer;
 
 public class Event<K, T> {
 	
-	public enum Type { CREATE, DELETE }
+	public enum Type { CREATE, UPDATE, DELETE }
 	
 	private final Type eventType;
 	private final K key;
