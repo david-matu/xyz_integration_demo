@@ -1,5 +1,5 @@
 spring:
- application.name: xyz-enrolment-service
+ application.name: xyz-gateway-service
  # Set the following property to "none" or "validate" in a prod environment
  jpa:
   hibernate:

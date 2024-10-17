@@ -8,7 +8,10 @@ to improve performance and reduce database walks for static data, and database m
 ___
 
 #### The Architecture
-![View Architecture Design](./doc/Structure_flow.drawio.svg)
+![View Architecture Design](./doc/Structure_flow.webp)
+
+
+Going with the requirement, the client end will be developed, then have a mock (basic) API to represent the Bank sending ``validation`` and ``payment notification`` to XYZ Gateway API
 
 
 ##### XYZ Services
@@ -73,11 +76,13 @@ This is a Gradle-built project that runs on Docker swarm
 ./gradlew build && docker compose build && docker compose up -d
 ```
 
-
 #### API Documentation
 After the services are up, access the documentation on the browser at:
 
 [http://localhost:9000/openapi/swagger-ui.html](http://localhost:9000/openapi/swagger-ui.html)
+
+#### Monitoring Events in Rabbit MQ
+Navigate to the following link to monitor messages: [http://localhost:15672/](http://localhost:15672/)
 
 #### Logs from Nodes:
 In advanced stage of this project, the logs can be shipped to `ELK`. At the moment, for simplicity, we can monitor logs per node on the terminal like so:

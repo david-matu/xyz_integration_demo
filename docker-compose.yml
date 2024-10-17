@@ -26,7 +26,19 @@ services:
       condition: service_healthy
      xyz-enrolment-service:
       condition: service_started
-
+  
+  bank-service:
+    build: bank_services/bank-pmtn-service
+    mem_limit: 512m
+    ports:
+      - "9090:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+     bank_mysql:
+      condition: service_healthy
+     xyz-gateway-service:
+      condition: service_started
       
   mysql:
    image: mysql:8.0.32
@@ -43,7 +55,24 @@ services:
     interval: 5s
     timeout: 2s
     retries: 60
-
+  
+  # Replicate mysql since Flyway can't handle migrations for multiple schems' 
+  bank_mysql:
+   image: mysql:8.0.32
+   mem_limit: 512m
+   ports:
+    - "3306-3306"
+   environment:
+    - MYSQL_ROOT_PASSWORD=dbpwd
+    - MYSQL_DATABASE=bank_clients
+    - MYSQL_USER=david
+    - MYSQL_PASSWORD=david123
+   healthcheck:
+    test: "/usr/bin/mysql --user=david --password=david123 --execute \"SHOW DATABASES;\""
+    interval: 5s
+    timeout: 2s
+    retries: 60
+  
   rabbitmq:
    image: rabbitmq:3.11.8-management
    mem_limit: 512m

@@ -1,0 +1,136 @@
+spring:
+ application.name: bank-pmtn-service
+ # Set the following property to "none" or "validate" in a prod environment
+ jpa:
+  hibernate:
+   ddl-auto: validate
+  
+  properties: 
+   hibernate:
+    dialect: org.hibernate.dialect.MySQLDialect
+    boot.allow_jdbc_metadata_access: false
+    
+ flyway:
+  enabled: false
+  
+   
+ datasource:
+  url: jdbc:mysql://localhost:3307/bank_clients
+  username: david
+  password: david123
+  # Wait for 60 seconds during startup to establish db connection
+  hikari.initializationFailTimeout: 60000
+ 
+server:
+ port: 7070
+ error.include-message: always
+ 
+
+logging:
+ level:
+  root: INFO
+  com.david.microservices.alpha: DEBUG
+  org.hibernate.SQL: DEBUG
+  org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+  
+
+api:
+ common:
+  title: Bank Service API
+  description: This is a demo Bank API that will facilitate sending of Validation Requests and Payment Notifications to the clients, like the XYZ University.
+  version: 1.0.0
+  
+  termsOfService: https://david-matu.github.io/xyz-integration/terms-of-service
+  license: General Usage License
+  licenseUrl: https://david-matu.github.io/xyz-integration/license
+  
+  externalDocDesc: Find out the public info about this API
+  externalDocUrl: https://david-matu.github.io/xyz-integration
+  
+  contact:
+   name: David Matu
+   url: https://david-matu.github.io
+   email: davidmatu817@gmail.com
+   
+ responseCodes:
+  ok.description: OK
+  badRequest.description: Bad Request, invalid format of the request. See response message for more information 
+  notFound.description: Not found. The specified id does not exist 
+  unprocessableEntity.description: Uprocessable entity, input parameters caused the processing to fail. See response message for more information
+   
+ bank_clients:
+  validate-student:
+   summary: Verify if a Student is enrolled
+   description: |
+    # Normal response
+    200 - OK
+  
+  send_payment_notificaiton:
+   summary: Sends a payment notification to the client (institution)
+   description: |
+    Use this resource to send a notification after making verdict of the first call (validate student) 
+    This will create a record of payment in the database as well
+   
+  payment_notifications:
+   summary: List all Payment Notifications that have been sent earlier
+   description: Returns a list of all payment notifications
+   
+  listing:
+   summary: List current Bank clients like XYZ University
+   description: Returns a list of Bank clients
+   
+springdoc:
+ swagger-ui.path: /openapi/swagger-ui.html
+ api-docs.path: /openapi/v3/api-docs
+ packagesToScan: com.bank.services
+ pathsToMatch: /**
+ 
+#spring.cloud.stream:
+# defaultBinder: rabbit
+# default.contentType: application/json
+# bindings:
+#  students-out-0:
+#   destination: studentq
+#   producer:
+#    required-groups: studentAuditGroup
+  
+#spring.rabbitmq:
+#  host: 127.0.0.1
+#  port: 5672
+#  username: guest
+#  password: guest
+  
+
+---
+spring:
+ config.activate.on-profile: docker
+ datasource:
+  url: jdbc:mysql://bank_mysql:3306/bank_clients
+  username: david
+  password: david123
+  hikari:
+   schema: bank_clients
+ 
+ # flyway will use above datasource to connect
+ flyway:
+  enabled: true
+  locations: classpath:db/migrations
+  validate-on-migrate: true
+  default-schema: bank_clients
+
+server.port: 8080
+
+#---
+#spring.config.activate.on-profile: streaming_partitioned
+#
+#spring.cloud.stream.bindings.students-out-0.producer:
+#  partition-key-expression: headers['partitionKey']
+#  partition-count: 1
+#
+#---
+#spring.config.activate.on-profile: kafka
+#
+#management.health.rabbit.enabled: false
+#spring.cloud.stream.defaultBinder: kafka
+#spring.kafka.bootstrap-servers: kafka:9092
+#spring.cloud.stream.kafka.binder.replication-factor: 1
