@@ -8,6 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.web.bind.annotation.RestController;
 
+import com.bank.services.api.GenericProcessingResponse;
+import com.bank.services.api.PaymentNotificationDetails;
+import com.bank.services.api.ValidationPaymentDetails;
 
 import edu.xyz.services.api.gateway.StudentInfo;
 import edu.xyz.services.api.gateway.XyzIntegrationService;
@@ -67,5 +70,29 @@ public class XyzIntegrationServiceImpl implements XyzIntegrationService {
 				.doOnError(ex -> LOG.warn("Fetching Student list failed: {}", ex.getMessage()))
 				.log(LOG.getName(), FINE);
 				
+	}
+	
+	// POST
+	@Override
+	public Mono<GenericProcessingResponse> validateStudent(ValidationPaymentDetails body) {
+		LOG.info("Will validate Student info for Student ID={}, account number: {}", body.getStudentId(), body.getAccountNumber());
+		
+		return integration.getValidStudent(body.getStudentId(), body.getAccountNumber())
+				.flatMap(student -> {
+					if(student != null) {
+						return Mono.just(new GenericProcessingResponse("ENROLLED", "Student account is active and ready to recieve payment"));
+					} else {
+						return Mono.just(new GenericProcessingResponse("NOT_FOUND", "Cannot verify given account"));
+					}
+				})
+				.doOnError(ex -> LOG.warn("An error occurred while validating student: ", ex.getMessage()))
+				.log(LOG.getName(), FINE);
+	}
+
+	// POST
+	@Override
+	public Mono<GenericProcessingResponse> receivePaymentNotification(PaymentNotificationDetails body) {
+		
+		return null;
 	}
 }

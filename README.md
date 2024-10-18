@@ -13,73 +13,150 @@ ___
 
 Going with the requirement, the client end will be developed, then have a mock (basic) API to represent the Bank sending ``validation`` and ``payment notification`` to XYZ Gateway API
 
-
-##### XYZ Services
-
-There are two key entities:
-* __`active_students`__ - Student information schema
-* __`payment_notifications`__ - 
+> The old narrative has been moved to file [README_old_narrative.md](./README_old_narrative.md) to keep this page concise.
 
 
-##### Expected:
-* Student Validation Endpoint
-* Payment Notification Endpoint
+#### Data Strucures
 
-##### Deduced Flow:
-The Bank will send __payment_notification__ to the school's STUDENT_VALIDATION api (endpoint).
+Database Structures:
 
-`STUDENT_VALIDATION api` should have cached student information for faster response
+1. XYZ University Services 
+These support the core APis for XYZ University
 
 
-`PAYMENT_NOTIFICATION` api will receive payment information, store in a queue and acknowledge. It's a supplier
+* __``enrolment``__
 
-`PAYMENT_HANDLER` is a consumer api that will process the payment notification and proceed to update the records in the db: financial records against a student.
+Facilitates Student validation to aid verdict on posting payment notification 
 
-
-#### Security
-For security of the communication:
-The Bank API will have a repository to store client information such as the `payment validation url`, `payment notification url`, we can model it this way:
 
 ```sql
-bank_clients = { CLIENT_ID + CLIENT_NAME + VALIDATION_URL + PAYMENT_NOTIFICATION_URL }
-
-// This information can be fed into an identity provider so we have less burden of maintaining the clients.
-// But, we can store this info in database and cache,
-
-// Since the bank system is an external system that can't subscribe to the XYZ's apis, we enhance security of the enpoints with the following approach:
-// To address security, on the XYZ University's systems, we can whitelist which IPs (the bank IP/ hostname) to allow for the payment validation and notifications
++----------------+--------------+------+-----+---------+-------+
+| Field          | Type         | Null | Key | Default | Extra |
++----------------+--------------+------+-----+---------+-------+
+| STUDENT_ID     | varchar(200) | NO   | PRI | NULL    |       |
+| FIRST_NAME     | varchar(25)  | YES  |     | NULL    |       |
+| LAST_NAME      | varchar(45)  | YES  |     | NULL    |       |
+| ACCOUNT_NUMBER | varchar(200) | YES  |     | NULL    |       |
+| STATUS         | varchar(45)  | YES  |     | NULL    |       |
++----------------+--------------+------+-----+---------+-------+
 ```
 
-#### Recap:
+* __``payments``__
 
-The Bank will process payment for an institution like XYZ, such that the details of XYZ are probably pointed by an __account_number__ 
+Persists Payment notifications from the bank
 
-With the account number, we can fetch the entire details of the client such as VALIDATION and NOTIFICATION_URL.
+```sql
++--------------------+--------------+------+-----+---------+-------+
+| Field              | Type         | Null | Key | Default | Extra |
++--------------------+--------------+------+-----+---------+-------+
+| PAYMENT_ID         | varchar(255) | NO   | PRI | NULL    |       |
+| EXTERNAL_REFERENCE | varchar(255) | YES  |     | NULL    |       |
+| FOR_INVOICE_ID     | varchar(50)  | YES  |     | NULL    |       |
+| STUDENT_ID         | varchar(50)  | YES  |     | NULL    |       |
+| AMOUNT_PAID        | double       | YES  |     | NULL    |       |
+| DATE_PAID          | datetime     | YES  |     | NULL    |       |
+| WALLET             | varchar(50)  | YES  |     | NULL    |       |
+| COMMENT            | text         | YES  |     | NULL    |       |
++--------------------+--------------+------+-----+---------+-------+
+```
 
-According to the details given, that step is already done, let's take care of the client at XYZ universities side to handle validations and payment notification receptions.
 
-This is a supossedly dedicated schema to store info regarding the client systems such as VALIDATION_ENDPOINTS.
+2. Banking Services
+* __bank_clients__
+```sql
++-------------------------+--------------+------+-----+---------+-------+
+| Field                   | Type         | Null | Key | Default | Extra |
++-------------------------+--------------+------+-----+---------+-------+
+| CLIENT_ID               | varchar(255) | NO   | PRI | NULL    |       |
+| INSTITUTION_NAME        | varchar(255) | YES  |     | NULL    |       |
+| VALIDATION_ENDPOINT     | varchar(255) | YES  |     | NULL    |       |
+| PAYMENT_NOTIFICATION_EP | varchar(255) | YES  |     | NULL    |       |
++-------------------------+--------------+------+-----+---------+-------+
+```
 
-Since the bank has a variety of clients, a client can be categorized in order to allow for different information. For instance, we can attach CATEGORY 
-column to identify the kind of client (e.g. school, payment provider, e-commerce). Each of these would be served differently depending on the product offered by/ 
-or consumed by the bank.
 
-For now, we stick to the minimal logic of sending validation requests and payment notifications to an institution registered with the bank
+* __payment_notifications__
+```sql
++--------------------------+--------------+------+-----+---------+-------+
+| Field                    | Type         | Null | Key | Default | Extra |
++--------------------------+--------------+------+-----+---------+-------+
+| NOTIFICATION_ID          | varchar(255) | NO   | PRI | NULL    |       |
+| CLIENT_CALLBACK_URL      | varchar(255) | NO   |     | NULL    |       |
+| CLIENT_ID                | varchar(255) | YES  |     | NULL    |       |
+| PAYMENT_BODY             | json         | YES  |     | NULL    |       |
+| QUEUED_AT                | datetime     | YES  |     | NULL    |       |
+| IS_SENT                  | int          | YES  |     | NULL    |       |
+| SENT_AT                  | datetime     | YES  |     | NULL    |       |
+| IS_ACKNOWLEDGED          | int          | YES  |     | NULL    |       |
+| ACKNOWLEDGEMENT_RESPONSE | text         | YES  |     | NULL    |       |
+| SEND_COUNT               | int          | YES  |     | NULL    |       |
+| COMMENT_LOG              | text         | YES  |     | NULL    |       |
++--------------------------+--------------+------+-----+---------+-------+
+```
 
 
-#### Running the solution
-This is a Gradle-built project that runs on Docker swarm
+#### Services
+All the services are bundled as a single project for simplicity and portability, capable of spinning up an entire landscape of services on __Docker__
 
-* Clone the repo
-* Run the command:
-```sh
+Using Docker compose, the services can be brought up altogether.
+
+* __Bank Services__
+Sends _Student Validation_ and _Payment notification_ requests to the Gateway services of Xyz apis
+
+ 
+* __Enrolment Service__  (xyz)
+A core service that hosts student enrolment and serves _Student Validation_ to the Gateway API
+
+
+* __Payment Service__    (xyz)
+A core service that serves to persist payment notifications received at the gateway. This API consumes message from queue to save to database
+
+
+* __Gateway Service__    (xyz)
+Responsible for hiding the core services for Xyz such that only desired APIs can interact with the external clients. Security will be implemented here.
+
+
+#### Running the services
+This is a Gradle-built project that runs on Docker swarm.
+> No need to install Gradle, the project comes with a Gradle wrapper.
+
+
+1. Fork the project 
+```sh 
+git clone https://github.com/david-matu/xyz_integration_demo.git
+
+cd xyz_integration_demo
+
 ./gradlew build && docker compose build && docker compose up -d
+```
+
+You should see logs like these after successful startup:
+```sh
+✔ Container xyz_services_integrated-rabbitmq-1               Healthy                                                                                                                                                                   11.5s 
+ ✔ Container xyz_services_integrated-bank_mysql-1             Healthy                                                                                                                                                                   12.3s 
+ ✔ Container xyz_services_integrated-mysql-1                  Healthy                                                                                                                                                                   10.8s 
+ ✔ Container xyz_services_integrated-xyz-payment-service-1    Started                                                                                                                                                                   11.0s 
+ ✔ Container xyz_services_integrated-xyz-enrolment-service-1  Started                                                                                                                                                                   11.0s 
+ ✔ Container xyz_services_integrated-xyz-gateway-service-1    Started                                                                                                                                                                   11.8s 
+ ✔ Container xyz_services_integrated-bank-service-1 
+ 
 ```
 
 #### API Documentation
 After the services are up, access the documentation on the browser at:
 
 [http://localhost:9000/openapi/swagger-ui.html](http://localhost:9000/openapi/swagger-ui.html)
+
+For core services:
+* __Bank Service__
+[localhost:9090/openapi/swagger-ui.html](http://localhost:9090/openapi/swagger-ui.html)
+
+* _xyz gateway service_
+[http://localhost:9000/openapi/swagger-ui.html](http://localhost:9000/openapi/swagger-ui.html)
+
+* __xyz enrolment service__
+[http://localhost:9001/xyz-core/openapi/webjars/swagger-ui/index.html#/](http://localhost:9001/xyz-core/openapi/swagger-ui.index.html) 
+
 
 #### Monitoring Events in Rabbit MQ
 Navigate to the following link to monitor messages: [http://localhost:15672/](http://localhost:15672/)
@@ -91,6 +168,10 @@ In the project root directory:
 ```sh
 # Append -f flag to display them as they happen 
 docker compose logs xyz-enrolment-service -f
+
+docker compose logs xyz-payment-service -f
+
+docker compose logs bank-service -f
 
 docker compose logs xyz-gateway-service
 
@@ -112,73 +193,11 @@ which is aggregated by a selected api (on gateway) and returned as a single obje
 For each of the instances, ensure you are in the project's root directory (where ```docker-compose``` resides
 
 
-1. __mysql__
+__mysql__
 ```sh
-docker compose exec mysql mysql -udavid -p
+docker compose exec mysql mysql -u david -p
+docker compose exec bank_mysql mysql -u david -p
 
-# Password is david123
+# Password will be prompted: enter david123
 ```  
-
-
-___
-
-#### The Bank APIs
-The Bank first sends a ```validation``` request to ascertain that a recipient for the payments actually exists in the XYZ system.
-
-XYZ will return a simple __```Student```__ object if the student specified by Student ID exists. If not, a ```404``` response will be issued.
-
-> There is room to improve the reponse for validation. There could be preference to return an __```IsValid```__ which looks like
-```json
-{
-	"student_id": "BE232",
-	"is_valid": "true"
-}
-```
-> The kind of response should be pronounced by the Bank and the client to conform, based on a product line (ex. _Shool Fee Programme_)
-
-
-When it's valid, the Bank API proceeds to queue the Payment notification. To address the challenge of integration:
-1. __Security__
-The client should whitelist only IPs of the Bank that should communicate to the Student Validation and Payment Notification endpoints. 
-That's because the bank so many clients it communicates to and it's infeasible to maintain a process that validates their authenticity.
-
-The clients can be offered a __Dashboard__ (API) to specify their Student Validation endpoints and Payment Notification endpoints.
-
-2. __Seamless Integration__ solution
-Maintain a repository that stores information going out to the clients.
-> 
-```sql
-payment_notifications = { NOTIFICATION_ID + CLIENT_ID + PAYMENT_DETAILS + QUEUED_AT + IS_SENT + SENT_AT + IS_ACKNOWLEDGED + ACKNOWLEDGEMENT_RESPONSE + SEND_COUNT + COMMENT_LOG }
-```
-
-Using above structure, we can monitor when a notification is sent to the client, and if it's received. 
-
-This should be the kind of response a client should send as `acknowledgement`:
-```json
-{
-	"notification_id": "abc321-th7g5p"
-	"status": "received"
-}
-```
-
-
-#### Challenges to Brainstorm:
-> Should the notification be synchronous? 
-When a payment notification is received: 
-
-* should the message be just queued for saving to DB before sending to the client (XYZ API),
- 
-or 
-
-* should we publish two Events (```SAVE_TO_DB```, ```SEND_TO_CLIENT```)
-
-> The first approach implies that in case of a database failure, the client will not receive the notification until the Bank's database is recovered. 
-_What does that mean for a student waiting for the payment to reflect?_
-
-> The second approach seems seems optmistic, efficient due to it's non-waiting, but a careful though-process will be held and documentated to discover any implications 
-and contrast it to the first approach. For now, we work with the first one, then we can adjust it to become the second. 
-
-  
-
-
 

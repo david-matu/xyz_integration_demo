@@ -5,6 +5,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import com.bank.services.api.GenericProcessingResponse;
+import com.bank.services.api.PaymentNotificationDetails;
+import com.bank.services.api.ValidationPaymentDetails;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -44,4 +48,40 @@ public interface XyzIntegrationService {
 	})
 	@GetMapping(value = "/xyz/students", produces = "application/json")
 	Flux<StudentInfo> getStudentInfoList();
+	
+	/**
+	 * 
+	 * 	Add new APis
+	 * 	(Reuse the classes in the lib project since we are running all them in one workspace)
+	 * 
+	 * 	Remember the API expects the subset of Validation Request which is Payment Details section
+	 */
+	@Operation(
+			summary = "${api.enrolment.validations.summary}",
+			description = "${api.enrolment.validations.description}")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "200", description = "${api.responseCodes.ok.description}"),
+			@ApiResponse(responseCode = "400", description = "${api.responseCodes.badRequest.description}"),
+			@ApiResponse(responseCode = "404", description = "${api.responseCodes.notFound.description}")
+	})
+	@PostMapping(value = "/xyz/students/validate", produces = "application/json")
+	Mono<GenericProcessingResponse> validateStudent(@RequestBody ValidationPaymentDetails body);
+	
+	/**
+	 * This resources expects only the subject of payment notification since some details were specific to the originating channel
+	 * 
+	 * @param body
+	 * @return
+	 */
+	@Operation(
+			summary = "${api.payments-notifications.summary}",
+			description = "${api.payments-notifications.description}")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "200", description = "${api.responseCodes.ok.description}"),
+			@ApiResponse(responseCode = "400", description = "${api.responseCodes.badRequest.description}"),
+			@ApiResponse(responseCode = "404", description = "${api.responseCodes.notFound.description}")
+	})
+	@PostMapping(value = "/xyz/payment-notifications", produces = "application/json")
+	Mono<GenericProcessingResponse> receivePaymentNotification(@RequestBody PaymentNotificationDetails body);
+	
 }

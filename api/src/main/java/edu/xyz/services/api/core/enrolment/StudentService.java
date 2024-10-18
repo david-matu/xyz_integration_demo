@@ -35,6 +35,19 @@ public interface StudentService {
 	})
 	*/
 	
+	/**
+	 * 	The Gateway Service API will do a GET request with two parameters: StudentID and Account Number
+	 * 	Will return Student {} object if valid
+	 * 	
+	 * 	The Gateway will transform to the format {responseStatus, responseMessage}
+	 * 
+	 * 	@param studentId
+	 * 	@param accountNumber
+	 * 	@return
+	 */
+	@GetMapping(value = "/students/{studentId}/{account_number}", produces = "application/json")
+	Mono<Student> getValidStudent(@PathVariable String studentId, @PathVariable String accountNumber);
+	
 	@GetMapping(value = "/students/{studentId}", produces = "application/json")
 	Mono<Student> getStudent(@PathVariable String studentId);
 	

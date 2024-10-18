@@ -13,7 +13,20 @@ services:
       condition: service_healthy
      rabbitmq:
       condition: service_healthy
-      
+  
+  xyz-payment-service:
+    build: microservices/xyz-payment-service
+    mem_limit: 512m
+    ports:
+      - "9002:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+     mysql:
+      condition: service_healthy
+     rabbitmq:
+      condition: service_healthy
+          
   xyz-gateway-service:
     build: microservices/xyz-gateway-service
     mem_limit: 512m

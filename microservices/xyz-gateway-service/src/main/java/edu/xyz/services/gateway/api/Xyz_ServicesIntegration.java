@@ -96,6 +96,16 @@ public class Xyz_ServicesIntegration implements StudentService {
 				.onErrorResume(error -> empty());
 	}
 	
+	@Override
+	public Mono<Student> getValidStudent(String studentId, String accountNumber) {
+		String url = studentServiceUrl + "/" + studentId + "/" + accountNumber;
+		
+		LOG.debug("Will call StudentService Validation API on URL: {}", url);
+		return webClient.get().uri(url).retrieve().bodyToMono(Student.class)
+				.log(LOG.getName(), FINE)
+				.onErrorMap(WebClientResponseException.class, ex -> handleException(ex));
+	}
+	
 	/**
 	 * 
 	 * @param bindingName

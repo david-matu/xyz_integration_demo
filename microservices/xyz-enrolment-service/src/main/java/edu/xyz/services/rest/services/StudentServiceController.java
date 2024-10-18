@@ -58,21 +58,6 @@ public class StudentServiceController implements StudentService {
 	 */
 	@Override
 	public Mono<Student> addStudent(Student body) {
-		
-		// return Mono.fromCallable(() -> internalCreateStudent(body))
-		/*
-		return Mono.fromCallable(() -> {
-			
-			sendMessage("students-out-0", new Event(CREATE, body.getStudentID(), body));
-			return body;
-		}).subscribeOn(publishEventScheduler);
-		*/
-		
-		// LOG.info("Saving student record to database: {}", body.getStudentID());
-		
-		// StudentEntity entity = mapper.apiToEntity(body);
-		// StudentEntity saveEntity = repo.save(entity);
-		
 		LOG.info("Saved student record to database: {}", body.getStudentID());
 		
 		return Mono.fromCallable(() -> internalCreateStudent(body))
@@ -89,6 +74,14 @@ public class StudentServiceController implements StudentService {
 	}
 	
 	@Override
+	public Mono<Student> getValidStudent(String studentId, String accountNumber) {
+		LOG.info("Checking validity of Student by id: {} and account number: {}", studentId, accountNumber);
+		
+		return Mono.fromCallable(() -> internalGetStudent(studentId, accountNumber))
+				.log(LOG.getName(), FINE)
+				.subscribeOn(jdbcScheduler);
+	}
+	@Override
 	public Flux<Student> getStudentList() {		
 		LOG.info("Fetching list of students");
 		
@@ -98,8 +91,6 @@ public class StudentServiceController implements StudentService {
 				.subscribeOn(jdbcScheduler);
 	}
 	
-	
-
 	private List<Student> internalGetStudentList() {
 		List<StudentEntity> entityList = repo.findAll();
 		
@@ -126,6 +117,20 @@ public class StudentServiceController implements StudentService {
 		return apiStudent;
 	}
 	
+	private Student internalGetStudent(String studentId, String accountNumber) {
+		StudentEntity studentEnt = repo.findByStudentID(studentId);
+		
+		Student apiStudent = mapper.entityToApi(studentEnt);
+		
+		if(apiStudent != null) {
+			apiStudent.setServiceAddress(serviceUtil.getServiceAddress());
+		} else {
+			throw new NotFoundException("No Student was found for Student ID: " + studentId);
+		}
+		
+		return apiStudent;
+	}
+	
 	private Student internalCreateStudent(Student body) {
 		try {
 			StudentEntity entity = mapper.apiToEntity(body);
@@ -137,7 +142,7 @@ public class StudentServiceController implements StudentService {
 			throw new InvalidInputException("Duplicate key, Student Id: " + body.getStudentID() + ", Student Id: " + body.getStudentID());
 		}		
 	}
-	
+
 	/**
 	 *	Commenting because this instance is already a message a consumer
 	 * 

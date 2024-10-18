@@ -1,17 +1,17 @@
 -- -----------------------------------------------------
 -- Table `bank_clients`.`bank_clients`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `bank_clients`.`bank_clients` (
+CREATE TABLE IF NOT EXISTS bank_clients (
   `CLIENT_ID` VARCHAR(255) NOT NULL,
   `INSTITUTION_NAME` VARCHAR(255) NULL,
   `VALIDATION_ENDPOINT` VARCHAR(255) NULL,
-  `PAYMENT_NOTIFICATION_EP` VARCHAR(45) NULL,
+  `PAYMENT_NOTIFICATION_EP` VARCHAR(255) NULL,
   PRIMARY KEY (`CLIENT_ID`));
 
 -- -----------------------------------------------------
 -- Table `bank_clients`.`payment_notifications`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `bank_clients`.`payment_notifications` (
+CREATE TABLE IF NOT EXISTS payment_notifications (
   `NOTIFICATION_ID` VARCHAR(255) NOT NULL,
   `CLIENT_CALLBACK_URL` VARCHAR(255) NOT NULL,
   `CLIENT_ID` VARCHAR(255) NULL,
