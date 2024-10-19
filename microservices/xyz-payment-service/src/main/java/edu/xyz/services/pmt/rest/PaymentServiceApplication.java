@@ -8,13 +8,16 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import reactor.core.scheduler.Scheduler;
 import reactor.core.scheduler.Schedulers;
 
-@SpringBootApplication(scanBasePackages = { "edu.xyz", "edu.xyz.services.rest.pmt" })
-@ComponentScan("edu.xyz.services.rest.pmt")
+//@EnableJpaRepositories(basePackages = "edu.xyz.services.rest.pmt.persistence")
+
+@SpringBootApplication
+@ComponentScan("edu.xyz")
 @OpenAPIDefinition
 public class PaymentServiceApplication {
 	

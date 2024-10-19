@@ -1,4 +1,4 @@
-package edu.xyz.services.rest.pmt.persistence;
+package edu.xyz.services.pmt.rest.persistence;
 
 
 
@@ -6,19 +6,16 @@ import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
-import jakarta.persistence.Index;
 import jakarta.persistence.Table;
-import jakarta.persistence.Version;
 
 @Entity
-@Table(name = "enrolment")
+@Table(name = "payments")
 public class PaymentEntity {
 	
 	@Id
 	@Column(name = "PAYMENT_ID")
-	private String paymentID;
+	private String paymentId;
 	
 	@Column(name = "EXTERNAL_REFERENCE")
 	private String externalReference;
@@ -29,10 +26,10 @@ public class PaymentEntity {
 	@Column(name = "STUDENT_ID")
 	private String studentId;
 	
-	@Column(name = "ACCOUNT_NUMBER")
+	@Column(name = "AMOUNT_PAID")
 	private double amounPaid;
 	
-	@Column(name = "STATUS")
+	@Column(name = "DATE_PAID")
 	private LocalDateTime datePaid;
 	
 	@Column(name = "WALLET")
@@ -43,11 +40,11 @@ public class PaymentEntity {
 	public PaymentEntity() {}
 
 	public String getPaymentID() {
-		return paymentID;
+		return paymentId;
 	}
 
 	public void setPaymentID(String paymentID) {
-		this.paymentID = paymentID;
+		this.paymentId = paymentID;
 	}
 
 	public String getExternalReference() {

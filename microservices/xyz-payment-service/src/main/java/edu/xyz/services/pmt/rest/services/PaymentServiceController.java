@@ -1,8 +1,9 @@
-package edu.xyz.services.rest.pmt.services;
+package edu.xyz.services.pmt.rest.services;
 
 import static java.util.logging.Level.FINE;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,8 +16,8 @@ import edu.xyz.services.api.exceptions.InvalidInputException;
 import edu.xyz.services.api.exceptions.NotFoundException;
 import edu.xyz.services.api.gateway.payments.IPaymentService;
 import edu.xyz.services.api.gateway.payments.Payment;
-import edu.xyz.services.rest.pmt.persistence.PaymentEntity;
-import edu.xyz.services.rest.pmt.persistence.PaymentRepository;
+import edu.xyz.services.pmt.rest.persistence.PaymentEntity;
+import edu.xyz.services.pmt.rest.persistence.PaymentRepository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Scheduler;
@@ -50,7 +51,7 @@ public class PaymentServiceController implements IPaymentService {
 	@Autowired
 	public PaymentServiceController(
 			@Qualifier("jdbcScheduler") Scheduler jdbcScheduler, 
-			PaymentRepository repo, Payment mapper, PaymentMapper pmtMapper) {
+			PaymentRepository repo, PaymentMapper pmtMapper) {
 		this.repo = repo;
 		this.pmtMapper = pmtMapper;
 		this.jdbcScheduler = jdbcScheduler;
@@ -89,15 +90,14 @@ public class PaymentServiceController implements IPaymentService {
 	}
 
 	private Payment internalGetPayment(String paymentId) {
-		PaymentEntity studentEnt = repo.findByPaymentID(paymentId);
+		Optional<PaymentEntity> studentEnt = repo.findByPaymentId(paymentId);
 		
-		Payment apiPayment = pmtMapper.entityToApi(studentEnt);
-		
-		if(apiPayment != null) {
-			return apiPayment;
-		} else {
-			throw new NotFoundException("No Payment was found for Payment ID: " + paymentId);
+		if(studentEnt.isPresent()) {
+			// Payment apiPayment = pmtMapper.entityToApi(studentEnt.get());
+			
+			return pmtMapper.entityToApi(studentEnt.get());
 		}
+		throw new NotFoundException("No Payment was found for Payment ID: " + paymentId);
 	}
 	
 	

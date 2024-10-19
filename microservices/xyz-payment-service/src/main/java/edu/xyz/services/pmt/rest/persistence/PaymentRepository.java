@@ -1,22 +1,21 @@
-package edu.xyz.services.rest.pmt.persistence;
+package edu.xyz.services.pmt.rest.persistence;
 
 import java.util.List;
+import java.util.Optional;
 
-import org.springframework.context.annotation.Configuration;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.transaction.annotation.Transactional;
 
-@Configuration
 public interface PaymentRepository extends CrudRepository<PaymentEntity, String>{
 	
 	@Transactional(readOnly = true)
-	PaymentEntity findByStudentID(String studentId);
+	List<PaymentEntity> findByStudentId(String studentId);
 	
 	@Transactional(readOnly = true)
-	PaymentEntity findByPaymentID(String paymentId);
+	Optional<PaymentEntity> findByPaymentId(String paymentId);
 	
 	@Transactional(readOnly = true)
-	PaymentEntity findByExternalReference(String exRef);
+	Optional<PaymentEntity> findByExternalReference(String exRef);
 	
 	@Transactional(readOnly = true)
 	List<PaymentEntity> findAll();

@@ -115,6 +115,8 @@ A core service that serves to persist payment notifications received at the gate
 * __Gateway Service__    (xyz)
 Responsible for hiding the core services for Xyz such that only desired APIs can interact with the external clients. Security will be implemented here.
 
+##### Structure and Flow of Data in the Services
+
 
 #### Running the services
 This is a Gradle-built project that runs on Docker swarm.
