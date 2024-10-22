@@ -1,26 +1,27 @@
 package edu.xyz.services.api.gateway.payments;
 
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 public class Payment {
 	
-	private String paymentID;
+	private long paymentID;
 	private String externalReference;
 	private String forInvoiceId;
 	private String studentId;
 	private double amounPaid;
-	private LocalDateTime datePaid;
+	private Timestamp datePaid;
 	private String accountNumber;	//Account number
 	
 	private String comment;
 	
 	public Payment() {}
 
-	public String getPaymentID() {
+	public long getPaymentID() {
 		return paymentID;
 	}
 
-	public void setPaymentID(String paymentID) {
+	public void setPaymentID(long paymentID) {
 		this.paymentID = paymentID;
 	}
 
@@ -56,11 +57,11 @@ public class Payment {
 		this.amounPaid = amounPaid;
 	}
 
-	public LocalDateTime getDatePaid() {
+	public Timestamp getDatePaid() {
 		return datePaid;
 	}
 
-	public void setDatePaid(LocalDateTime datePaid) {
+	public void setDatePaid(Timestamp datePaid) {
 		this.datePaid = datePaid;
 	}
 

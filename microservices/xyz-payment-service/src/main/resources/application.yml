@@ -81,7 +81,7 @@ spring.cloud.stream:
  defaultBinder: rabbit
  default.contentType: application/json
  bindings.messageProcessor-in-0:
-  destination: paymentq
+  destination: paymentsq
   group: paymentsAuditGroup
  
  bindings.messageProcessor-in-0.consumer:
@@ -99,8 +99,6 @@ spring.rabbitmq:
   password: guest
   
 ---
-server.port: 8080
-
 spring:
  config.activate.on-profile: docker
  
@@ -111,6 +109,8 @@ spring:
   hikari:
    schema: xyz_unversity
  
+server.port: 8080
+
  # flyway will use above datasource to connect / COmmenting to allow this be managed by the enrolment service
 # flyway:
 #  enabled: true
@@ -125,7 +125,7 @@ spring.config.activate.on-profile: streaming_partitioned
 
 spring.cloud.stream.bindings.messageProcessor-in-0.consumer:
   partitioned: true
-  instanceCount: 2
+  instanceCount: 1
 
 ---
 spring.config.activate.on-profile: streaming_instance_0

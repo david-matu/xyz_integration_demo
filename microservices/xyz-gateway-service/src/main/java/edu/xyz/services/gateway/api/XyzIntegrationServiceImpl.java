@@ -77,22 +77,23 @@ public class XyzIntegrationServiceImpl implements XyzIntegrationService {
 	public Mono<GenericProcessingResponse> validateStudent(ValidationPaymentDetails body) {
 		LOG.info("Will validate Student info for Student ID={}, account number: {}", body.getStudentId(), body.getAccountNumber());
 		
-		return integration.getValidStudent(body.getStudentId(), body.getAccountNumber())
+		return integration.getValidStudent(body);
+				/*
 				.flatMap(student -> {
 					if(student != null) {
-						return Mono.just(new GenericProcessingResponse("ENROLLED", "Student account is active and ready to recieve payment"));
+						return Mono.just(new GenericProcessingResponse("ENROLLED", "Student account is active and ready to receive payment"));
 					} else {
 						return Mono.just(new GenericProcessingResponse("NOT_FOUND", "Cannot verify given account"));
 					}
 				})
 				.doOnError(ex -> LOG.warn("An error occurred while validating student: ", ex.getMessage()))
 				.log(LOG.getName(), FINE);
+				*/
 	}
 
 	// POST
 	@Override
 	public Mono<GenericProcessingResponse> receivePaymentNotification(PaymentNotificationDetails body) {
-		
-		return null;
+		return integration.addPayment(body);
 	}
 }

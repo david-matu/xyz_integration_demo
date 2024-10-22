@@ -16,7 +16,7 @@ public class StudentEntity {
 	
 	@Id
 	@Column(name = "STUDENT_ID")
-	private String studentID;
+	private String studentId;
 	
 	/*
 	 * Implement this when dealing with distributed transactions
@@ -48,7 +48,7 @@ public class StudentEntity {
 	 * @param status
 	 */
 	public StudentEntity(String studentID, String firstName, String lastName, String accountNumber, String status) {
-		this.studentID = studentID;
+		this.studentId = studentID;
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.accountNumber = accountNumber;
@@ -56,11 +56,11 @@ public class StudentEntity {
 	}
 
 	public String getStudentID() {
-		return studentID;
+		return studentId;
 	}
 
 	public void setStudentID(String studentID) {
-		this.studentID = studentID;
+		this.studentId = studentID;
 	}
 
 	public String getFirstName() {

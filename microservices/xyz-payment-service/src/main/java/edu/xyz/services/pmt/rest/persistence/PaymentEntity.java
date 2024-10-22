@@ -2,10 +2,13 @@ package edu.xyz.services.pmt.rest.persistence;
 
 
 
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
@@ -15,7 +18,8 @@ public class PaymentEntity {
 	
 	@Id
 	@Column(name = "PAYMENT_ID")
-	private String paymentId;
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private long paymentId;
 	
 	@Column(name = "EXTERNAL_REFERENCE")
 	private String externalReference;
@@ -30,7 +34,8 @@ public class PaymentEntity {
 	private double amounPaid;
 	
 	@Column(name = "DATE_PAID")
-	private LocalDateTime datePaid;
+	private Timestamp datePaid;
+	// private LocalDateTime datePaid;
 	
 	@Column(name = "WALLET")
 	private String accountNumber;	//Account number
@@ -39,11 +44,11 @@ public class PaymentEntity {
 	
 	public PaymentEntity() {}
 
-	public String getPaymentID() {
+	public long getPaymentID() {
 		return paymentId;
 	}
 
-	public void setPaymentID(String paymentID) {
+	public void setPaymentID(long paymentID) {
 		this.paymentId = paymentID;
 	}
 
@@ -79,11 +84,11 @@ public class PaymentEntity {
 		this.amounPaid = amounPaid;
 	}
 
-	public LocalDateTime getDatePaid() {
+	public Timestamp getDatePaid() {
 		return datePaid;
 	}
 
-	public void setDatePaid(LocalDateTime datePaid) {
+	public void setDatePaid(Timestamp datePaid) {
 		this.datePaid = datePaid;
 	}
 

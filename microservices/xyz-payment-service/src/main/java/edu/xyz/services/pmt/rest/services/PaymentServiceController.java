@@ -12,6 +12,9 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.bank.services.api.GenericProcessingResponse;
+import com.bank.services.api.PaymentNotificationDetails;
+
 import edu.xyz.services.api.exceptions.InvalidInputException;
 import edu.xyz.services.api.exceptions.NotFoundException;
 import edu.xyz.services.api.gateway.payments.IPaymentService;
@@ -60,7 +63,7 @@ public class PaymentServiceController implements IPaymentService {
 	/**
 	 * This resource will send CREATE event for Payment to the messaging system
 	 * 
-	 */
+	 *
 	@Override
 	public Mono<Payment> addPayment(Payment body) {
 		LOG.info("Saved student record to database: {}", body.getPaymentID());
@@ -68,9 +71,10 @@ public class PaymentServiceController implements IPaymentService {
 		return Mono.fromCallable(() -> internalCreatePayment(body))
 				.subscribeOn(jdbcScheduler);
 	}
+	*/
 
 	@Override
-	public Mono<Payment> getPayment(String paymentId) {
+	public Mono<Payment> getPayment(long paymentId) {
 		LOG.info("Fetching Payment by id: {}", paymentId);
 		
 		return Mono.fromCallable(() -> internalGetPayment(paymentId))
@@ -89,7 +93,7 @@ public class PaymentServiceController implements IPaymentService {
 		return list;
 	}
 
-	private Payment internalGetPayment(String paymentId) {
+	private Payment internalGetPayment(long paymentId) {
 		Optional<PaymentEntity> studentEnt = repo.findByPaymentId(paymentId);
 		
 		if(studentEnt.isPresent()) {
@@ -101,20 +105,22 @@ public class PaymentServiceController implements IPaymentService {
 	}
 	
 	
-	private Payment internalCreatePayment(Payment body) {
+	private PaymentNotificationDetails internalCreatePayment(PaymentNotificationDetails body) {
 		try {
-			PaymentEntity entity = pmtMapper.apiToEntity(body);
+			PaymentEntity entity = pmtMapper.notifDetailsToEntity(body); //.apiToEntity(body);
 			PaymentEntity newEntity = repo.save(entity);
 			
-			LOG.debug("createPayment: created a Payment notification record: {}", body.getPaymentID());
-			return pmtMapper.entityToApi(newEntity);
+			LOG.info("createPaymentNotification: created a Payment notification record: {}", body.getPaymentReference());
+			//return pmtMapper.entityToApi(newEntity);
+			return pmtMapper.entityToNotifDetails(newEntity);
 		} catch (DataIntegrityViolationException dive) {
-			throw new InvalidInputException("Duplicate key, Payment Id: " + body.getPaymentID() + ", Payment Id: " + body.getPaymentID());
-		}		
+			throw new InvalidInputException("Duplicate key, Payment Id: " + body.getPaymentReference() + ", Payment Id: " + body.getPaymentReference());
+		}
 	}
-
+	
+	/*
 	@Override
-	public Flux<Payment> getAllPayment() {
+	public Flux<Payment> getAllPayments() {
 		LOG.info("Fetching list of payments");
 		
 		return Mono.fromCallable(() -> internalGetPaymentList())
@@ -122,7 +128,8 @@ public class PaymentServiceController implements IPaymentService {
 				.log(LOG.getName(), FINE)
 				.subscribeOn(jdbcScheduler);
 	}
-
+	*/
+	
 	@Override
 	public Flux<Payment> getPaymentsByStudentID(String studentId) {
 		LOG.info("Fetching Payments for Student with id: {} \nThis feature is under development", studentId);
@@ -134,6 +141,38 @@ public class PaymentServiceController implements IPaymentService {
 				.subscribeOn(jdbcScheduler);
 				*/
 		return Flux.empty();
+	}
+
+	/**
+	 * 	Overriding this method, will scrap it out later because the intention to save the notification is fulfilled by the payment notification consumer
+	 * 
+	 * 	This problem is proudly brought to you by share contracts: IPaymentService, which is borrowed by the Gateway service 
+	 * 	to ensure all operations leading to Payment Service (here) are met
+	 * 
+	 */
+	@Override
+	public Mono<GenericProcessingResponse> addPayment(PaymentNotificationDetails body) {
+		LOG.info("Save Payment Notification: {}", body.getPaymentReference());
+		
+		return Mono.fromCallable(() -> internalCreatePayment(body))
+				.map(e -> {
+					LOG.info("Saved Payment Notification for: " + e.getFirstName());
+					if(e.getPaymentReference() != null) {
+						return new GenericProcessingResponse("ACCEPTED", "Back channel: notification posting accepted");
+					}
+					return new GenericProcessingResponse("ERROR", "Back channel: notification can't be posted because payment ref is void");
+				})
+				.doOnError(ex -> {
+					LOG.info("There was an error in saving Payment notification: " + ex.getMessage());
+					//return Mono.just(new GenericProcessingResponse("ERROR", "Back channel: notification can't be posted because payment ref is void"));
+				})
+				.subscribeOn(jdbcScheduler);
+	}
+
+	@Override
+	public Flux<Payment> getAllPayments() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	/**

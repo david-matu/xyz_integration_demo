@@ -5,6 +5,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import com.bank.services.api.GenericProcessingResponse;
+import com.bank.services.api.ValidationPaymentDetails;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -39,14 +42,16 @@ public interface StudentService {
 	 * 	The Gateway Service API will do a GET request with two parameters: StudentID and Account Number
 	 * 	Will return Student {} object if valid
 	 * 	
-	 * 	The Gateway will transform to the format {responseStatus, responseMessage}
+	 * 	The Gateway will transform to the format {responseStatus, responseMessage} // That is GenericProcessingResponse
 	 * 
 	 * 	@param studentId
 	 * 	@param accountNumber
 	 * 	@return
 	 */
-	@GetMapping(value = "/students/{studentId}/{account_number}", produces = "application/json")
-	Mono<Student> getValidStudent(@PathVariable String studentId, @PathVariable String accountNumber);
+	@PostMapping(value = "/students/validate")
+	Mono<GenericProcessingResponse> getValidStudent(@RequestBody ValidationPaymentDetails validationPaymentDetails);
+	//@GetMapping(value = "/students/{studentId}/{account_number}", produces = "application/json")
+	//Mono<GenericProcessingResponse> getValidStudent(@PathVariable String studentId, @PathVariable String accountNumber);
 	
 	@GetMapping(value = "/students/{studentId}", produces = "application/json")
 	Mono<Student> getStudent(@PathVariable String studentId);

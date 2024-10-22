@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
@@ -138,15 +139,37 @@ public class BankServicesIntegrationAPI implements BankServiceIntegration {
 		Optional<BankClientEntity> client = clientsRepo.findByClientId(validateRequest.getInstitutionId());
 		
 		if(client.isPresent()) {
-			LOG.info("Found Client for ID: {}, name: {}", validateRequest.getInstitutionId(), client.get().getInstitutionName());
+			LOG.info("Found Client: \n ID: {} \n name: {} \n Validation URL: {}", validateRequest.getInstitutionId(), client.get().getInstitutionName(), client.get().getValidationEndpoint());
 			
 			// Send the validation request to the endpoint
 			String validateEP = client.get().getValidationEndpoint();
 			
-			if(validateEP != null | !validateEP.isBlank()) {
+			/*
+			uri(url)
+				.contentType(MediaType.APPLICATION_JSON)
+				.bodyValue(details)
+				.retrieve()
+				.bodyToMono(GenericProcessingResponse.class)
+				.onErrorResume(ex -> {
+					return Mono.just(new GenericProcessingResponse("Server Error", "There was an error serving Student Validation request: " + ex.getMessage()));
+				})
+				.log(LOG.getName(), FINE)
+				.onErrorMap(WebClientResponseException.class, ex -> handleException(ex));
+			*/
+			// if(validateEP != null || !validateEP.isBlank()) {
+			if((validateEP != null) && (validateEP.isBlank() ? false : true)) {
 				LOG.debug("Will call validation endpoint on client API on URL: {}", validateEP);
+				LOG.info("Calling Student Validation EP at {}", client.get().getValidationEndpoint());
 				
-				return webClient.post().uri(validateEP).retrieve().bodyToMono(GenericProcessingResponse.class)
+				return webClient
+						.post()
+						.uri(validateEP)
+						.bodyValue(validateRequest.getPaymentDetails())
+						.retrieve()
+						.bodyToMono(GenericProcessingResponse.class)
+						.onErrorResume(ex -> {
+							return Mono.just(new GenericProcessingResponse("Server Error", "There was an error requesting Student Validation: " + ex.getMessage()));
+						})
 						.log(LOG.getName(), FINE)
 						.onErrorMap(WebClientResponseException.class, ex -> handleException(ex));
 			} else {
@@ -189,7 +212,7 @@ public class BankServicesIntegrationAPI implements BankServiceIntegration {
 		               } else {
 		                   // If null, you could throw an exception or return an alternative value
 		                   // throw new NotFoundException("BankClient is null");
-		                   return Mono.just(new GenericProcessingResponse("ERROR", "Bank Client not ready for operation"));
+		                   return Mono.just(new GenericProcessingResponse("FAILED", "Client not ready for operation"));
 		               }
 				})
 				.log(LOG.getName(), FINE)
@@ -197,19 +220,28 @@ public class BankServicesIntegrationAPI implements BankServiceIntegration {
 	}
 	
 	/*
-	 *  Do the actual sending of the notification to the enpoint
+	 *  Do the actual sending of the notification to the endpoint
 	 *
 	 *	We expect the client (xyz pmt notification api) to return a message in the format:
 	 *
 	 * 	
 	 */
+	private Mono<GenericProcessingResponse> sendPaymentNotificationToExternalEndpoint(String paymentNotificationUrl, PaymentNotificationDetails paymentDetails) {
+		return sendPaymentNotificationToExternalEndpoint(paymentDetails, paymentNotificationUrl);
+		
+	}
+	
 	private Mono<GenericProcessingResponse> sendPaymentNotificationToExternalEndpoint(PaymentNotificationDetails paymentDetails, String paymentNotificationUrl) {
 		
 		return webClient.post()
 				.uri(paymentNotificationUrl)
+				.bodyValue(paymentDetails)
 				.retrieve()
 				.bodyToMono(GenericProcessingResponse.class)
 				.log(LOG.getName(), FINE)
+				.onErrorResume(ex -> {
+					return Mono.just(new GenericProcessingResponse("Server Error", "There was an error posting payment notification to client: " + ex.getMessage()));
+				})
 				.onErrorMap(WebClientResponseException.class, ex -> handleException(ex));
 		
 		//return new GenericProcessingResponse("ERROR", "Bank Client not ready operation");

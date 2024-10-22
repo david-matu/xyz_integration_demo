@@ -74,8 +74,8 @@ public interface XyzIntegrationService {
 	 * @return
 	 */
 	@Operation(
-			summary = "${api.payments-notifications.summary}",
-			description = "${api.payments-notifications.description}")
+			summary = "${api.payment-service.post-payment-notification.summary}",
+			description = "${api.payment-service.post-payment-notification.description}")
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "200", description = "${api.responseCodes.ok.description}"),
 			@ApiResponse(responseCode = "400", description = "${api.responseCodes.badRequest.description}"),

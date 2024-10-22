@@ -1,13 +1,15 @@
 package com.bank.services.api;
 
+import java.sql.Timestamp;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * This class will hold the inner body specified by "payment_details" key like in the following sample json:
 {   
-    "payment_ref": "REF-123-FROM-SYS-INTERNAL-2024",
     "institution_id": "xyz-universisty",
     "payment_details": {
+    	"payment_ref": "REF-123-FROM-SYS-INTERNAL-2024",
         "student_id": "BE232",
         "first_name": "David",
         "last_name": "Matu",
@@ -20,6 +22,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 }
  */
 public class PaymentNotificationDetails {
+	
+	@JsonProperty(value = "payment_ref")
+	String paymentReference;
 	
 	@JsonProperty(value = "student_id")
 	String studentId;
@@ -39,7 +44,7 @@ public class PaymentNotificationDetails {
 	String currency;
 	
 	@JsonProperty(value = "date_paid")
-	String datePaid;
+	Timestamp datePaid;
 	
 	String branch;
 
@@ -93,11 +98,11 @@ public class PaymentNotificationDetails {
 		this.currency = currency;
 	}
 
-	public String getDatePaid() {
+	public Timestamp getDatePaid() {
 		return datePaid;
 	}
 
-	public void setDatePaid(String datePaid) {
+	public void setDatePaid(Timestamp datePaid) {
 		this.datePaid = datePaid;
 	}
 
@@ -109,11 +114,20 @@ public class PaymentNotificationDetails {
 		this.branch = branch;
 	}
 
+	public String getPaymentReference() {
+		return paymentReference;
+	}
+
+	public void setPaymentReference(String paymentReference) {
+		this.paymentReference = paymentReference;
+	}
+
 	@Override
 	public String toString() {
-		return "PaymentNotificationDetails [studentId=" + studentId + ", firstName=" + firstName + ", lastName="
-				+ lastName + ", accountNumber=" + accountNumber + ", amountPaid=" + amountPaid + ", currency="
-				+ currency + ", datePaid=" + datePaid + ", branch=" + branch + "]";
+		return "PaymentNotificationDetails [paymentReference=" + paymentReference + ", studentId=" + studentId
+				+ ", firstName=" + firstName + ", lastName=" + lastName + ", accountNumber=" + accountNumber
+				+ ", amountPaid=" + amountPaid + ", currency=" + currency + ", datePaid=" + datePaid + ", branch="
+				+ branch + "]";
 	}
 	
 }

@@ -9,7 +9,8 @@ public class Student {
 	private String studentID;
 	private String firstName;
 	private String lastName;
-	
+	private String status;
+	private String accountNumber;
 	// accountNo and status fields will be handled by the db entity class
 	
 	private String serviceAddress; // return information (IP) of the instance that has served this request
@@ -21,7 +22,22 @@ public class Student {
 		this.firstName = firstName;
 		this.lastName = lastName;
 	}
-
+	
+	public Student(String studentID, String firstName, String lastName, String status) {
+		this.studentID = studentID;
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.status = status;
+	}
+	
+	public Student(String studentID, String firstName, String lastName, String status, String accountNumber) {
+		this.studentID = studentID;
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.status = status;
+		this.accountNumber = accountNumber;
+	}
+	
 	public String getStudentID() {
 		return studentID;
 	}
@@ -52,5 +68,21 @@ public class Student {
 
 	public void setServiceAddress(String serviceAddress) {
 		this.serviceAddress = serviceAddress;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	public String getAccountNumber() {
+		return accountNumber;
+	}
+
+	public void setAccountNumber(String accountNumber) {
+		this.accountNumber = accountNumber;
 	}
 }

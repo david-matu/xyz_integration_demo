@@ -33,7 +33,7 @@ services:
     ports:
       - "9000:8080"
     environment:
-      - SPRING_PROFILES_ACTIVE=docker,streaming_partitioned
+      - SPRING_PROFILES_ACTIVE=docker,streaming_partitioned,streaming_instance_0
     depends_on:
      rabbitmq:
       condition: service_healthy
@@ -46,7 +46,7 @@ services:
     ports:
       - "9090:8080"
     environment:
-      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_PROFILES_ACTIVE=docker,streaming_partitioned,streaming_instance_0
     depends_on:
      bank_mysql:
       condition: service_healthy

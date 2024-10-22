@@ -13,12 +13,16 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 
+import com.bank.services.api.GenericProcessingResponse;
+import com.bank.services.api.PaymentNotificationDetails;
+import com.bank.services.api.ValidationPaymentDetails;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import edu.xyz.services.api.core.enrolment.Student;
@@ -26,13 +30,15 @@ import edu.xyz.services.api.core.enrolment.StudentService;
 import edu.xyz.services.api.events.Event;
 import edu.xyz.services.api.exceptions.InvalidInputException;
 import edu.xyz.services.api.exceptions.NotFoundException;
+import edu.xyz.services.api.gateway.payments.IPaymentService;
+import edu.xyz.services.api.gateway.payments.Payment;
 import edu.xyz.services.util.http.HttpErrorInfo;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Scheduler;
 
 @Component
-public class Xyz_ServicesIntegration implements StudentService {
+public class Xyz_ServicesIntegration implements StudentService , IPaymentService {
 	
 	private final Logger LOG = LoggerFactory.getLogger(Xyz_ServicesIntegration.class);
 	
@@ -86,7 +92,7 @@ public class Xyz_ServicesIntegration implements StudentService {
 			return body;
 		}).subscribeOn(publishEventScheduler);		
 	}
-
+	
 	@Override
 	public Flux<Student> getStudentList() {
 		String url = studentServiceUrl;
@@ -97,11 +103,22 @@ public class Xyz_ServicesIntegration implements StudentService {
 	}
 	
 	@Override
-	public Mono<Student> getValidStudent(String studentId, String accountNumber) {
-		String url = studentServiceUrl + "/" + studentId + "/" + accountNumber;
+	public Mono<GenericProcessingResponse> getValidStudent(ValidationPaymentDetails details) {
+		//String url = studentServiceUrl + "/" + details.getStudentId() + "/" + details.getAccountNumber();
 		
+		String url = studentServiceUrl + "/validate";
 		LOG.debug("Will call StudentService Validation API on URL: {}", url);
-		return webClient.get().uri(url).retrieve().bodyToMono(Student.class)
+		
+		return webClient
+				.post()
+				.uri(url)
+				.contentType(MediaType.APPLICATION_JSON)
+				.bodyValue(details)
+				.retrieve()
+				.bodyToMono(GenericProcessingResponse.class)
+				.onErrorResume(ex -> {
+					return Mono.just(new GenericProcessingResponse("Server Error", "There was an error serving Student Validation request: " + ex.getMessage()));
+				})
 				.log(LOG.getName(), FINE)
 				.onErrorMap(WebClientResponseException.class, ex -> handleException(ex));
 	}
@@ -113,6 +130,8 @@ public class Xyz_ServicesIntegration implements StudentService {
 	 */
 	private void sendMessage(String bindingName, Event event) {
 		LOG.debug("Sending a {} message to {}", event.getEventType(), bindingName);
+		
+		LOG.info("Sending a {} message to {}", event.getEventType(), bindingName);
 		
 		Message message = MessageBuilder.withPayload(event)
 				.setHeader("partitionKey", event.getKey())
@@ -151,4 +170,78 @@ public class Xyz_ServicesIntegration implements StudentService {
 			return ex.getMessage();
 		}
 	}
+
+	@Override
+	public Flux<Payment> getPaymentsByStudentID(String studentId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Mono<Payment> getPayment(long paymentId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	// Push message to queue
+	@Override
+	public Mono<GenericProcessingResponse> addPayment(PaymentNotificationDetails body) {
+		
+		LOG.info("Received payment notification, proceeding to queue. \n{}", body.toString());
+		
+		return Mono.fromCallable(() -> {
+			sendMessage("payments-out-0", new Event(CREATE, body.getPaymentReference(), body));
+			
+			return new GenericProcessingResponse("ACCEPTED", "Message accepted for processing");
+		}).subscribeOn(publishEventScheduler);
+	}
+
+	@Override
+	public Flux<Payment> getAllPayments() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	/*
+	 * 
+	@Override
+	public Flux<Payment> getPaymentsByStudentID(String studentId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Mono<Payment> getPayment(String paymentRef) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	**
+	 * Use this method to forward the Payment notification to the xyz-payment-service
+	 *
+	@Override
+	public Mono<Payment> addPayment(Payment body) {
+		String url = studentServiceUrl + "/validate";
+		LOG.debug("Will call StudentService Validation API on URL: {}", url);
+		
+		return webClient
+				.post()
+				.uri(url)
+				.contentType(MediaType.APPLICATION_JSON)
+				.bodyValue(details)
+				.retrieve()
+				.bodyToMono(GenericProcessingResponse.class)
+				.onErrorResume(ex -> {
+					return Mono.just(new GenericProcessingResponse("Server Error", "There was an error serving Student Validation request: " + ex.getMessage()));
+				})
+				.log(LOG.getName(), FINE)
+				.onErrorMap(WebClientResponseException.class, ex -> handleException(ex));
+	}
+
+	@Override
+	public Flux<Payment> getAllPayment() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	*/
 }

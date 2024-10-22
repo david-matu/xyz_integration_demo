@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import com.bank.services.api.PaymentNotificationDetails;
+
 import edu.xyz.services.api.core.enrolment.Student;
 import edu.xyz.services.api.core.enrolment.StudentService;
 import edu.xyz.services.api.events.Event;
@@ -31,13 +33,14 @@ public class MessageProcessorConfig {
 	}
 	
 	@Bean
-	public Consumer<Event<String, Payment>> messageProcessor() {
+	public Consumer<Event<String, PaymentNotificationDetails>> messageProcessor() {
+		LOG.info("Processing payment notification");
 		return event -> {
 			LOG.info("Process message created at {}...", event.getEventCreatedAt());
 			
 			switch (event.getEventType()) {
 				case CREATE:
-					Payment pmt = event.getData();
+					PaymentNotificationDetails pmt = event.getData();
 					
 					LOG.info("Create Payment record for Student with ID: {}", pmt.getStudentId());
 					pmtService.addPayment(pmt).block();

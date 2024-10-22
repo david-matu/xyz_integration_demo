@@ -38,7 +38,7 @@ COMMENT = 'Store records of active students. Students for which payments can be 
 -- Table `payments`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS payments (
-  `PAYMENT_ID` VARCHAR(255) NOT NULL,
+  `PAYMENT_ID` BIGINT NOT NULL AUTO_INCREMENT,
   `EXTERNAL_REFERENCE` VARCHAR(255) NULL COMMENT 'A reference of the message as issued from external system',
   `FOR_INVOICE_ID` VARCHAR(50) NULL,
   `STUDENT_ID` VARCHAR(50) NULL,
@@ -48,3 +48,12 @@ CREATE TABLE IF NOT EXISTS payments (
   `COMMENT` TEXT NULL,
   PRIMARY KEY (`PAYMENT_ID`))
 COMMENT = 'Store records for received payments, essentially from Bank';
+
+
+-- -----------------------------------------------------
+-- Set the start value of AUTO-INREMENT on `payments`
+-- -----------------------------------------------------
+ALTER TABLE payments AUTO_INCREMENT=10001;
+
+
+ 

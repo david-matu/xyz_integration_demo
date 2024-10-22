@@ -3,6 +3,7 @@ package edu.xyz.services.rest.services;
 import static java.util.logging.Level.FINE;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,6 +12,9 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.bank.services.api.GenericProcessingResponse;
+import com.bank.services.api.ValidationPaymentDetails;
 
 import edu.xyz.services.api.core.enrolment.Student;
 import edu.xyz.services.api.core.enrolment.StudentService;
@@ -74,13 +78,34 @@ public class StudentServiceController implements StudentService {
 	}
 	
 	@Override
-	public Mono<Student> getValidStudent(String studentId, String accountNumber) {
-		LOG.info("Checking validity of Student by id: {} and account number: {}", studentId, accountNumber);
+	public Mono<GenericProcessingResponse> getValidStudent(ValidationPaymentDetails details) {
+		LOG.info("Checking validity of Student by id: {} and account number: {}", details.getStudentId(), details.getAccountNumber());
 		
-		return Mono.fromCallable(() -> internalGetStudent(studentId, accountNumber))
+		// internalGetStudentValidity(details.getStudentId(), details.getAccountNumber())
+		return Mono.fromCallable(() -> internalGetStudent(details.getStudentId()))
+				.map(stud -> {
+					// DEtermine the enrolment status of the student and respond accordingly
+					LOG.info("Validating Student enrolment status: {}", stud.getStatus());
+					
+					// Besides returning enrolment status, Should we tell the client when the account number is valid or invalid?
+					
+					if(stud.getStatus().equalsIgnoreCase("ENROLLED")) {
+						if(stud.getAccountNumber() == details.getAccountNumber()) {
+							return new GenericProcessingResponse("ENROLLED", "Student " + stud.getFirstName() + " with id " + stud.getStudentID() + " is valid"); // Too much information, but for proof-of-concept purpose
+						} else {
+							return new GenericProcessingResponse("ENROLLED_INVALID_ACCOUNT_NUMBER", "Student (" + stud.getFirstName() + ") with id " + stud.getStudentID() + " is not eligible for specified account (" + details.getAccountNumber() + ")");
+						}
+					} else {
+						return new GenericProcessingResponse("NOT_ELIGIBLE", "Student not eligible for tuition payments");
+					}
+				})
 				.log(LOG.getName(), FINE)
+				.onErrorResume(e -> {
+					return Mono.just(new GenericProcessingResponse("FAILED", "An error occurred validating Student enrolment: " + e.getMessage()));
+				})
 				.subscribeOn(jdbcScheduler);
 	}
+	
 	@Override
 	public Flux<Student> getStudentList() {		
 		LOG.info("Fetching list of students");
@@ -104,31 +129,45 @@ public class StudentServiceController implements StudentService {
 	}
 
 	private Student internalGetStudent(String studentId) {
-		StudentEntity studentEnt = repo.findByStudentID(studentId);
+		Optional<StudentEntity> studentEnt = repo.findByStudentId(studentId);
 		
-		Student apiStudent = mapper.entityToApi(studentEnt);
-		
-		if(apiStudent != null) {
+		if(studentEnt.isPresent()) {
+			Student apiStudent = mapper.entityToApi(studentEnt.get());
 			apiStudent.setServiceAddress(serviceUtil.getServiceAddress());
+			
+			return apiStudent;
 		} else {
 			throw new NotFoundException("No Student was found for Student ID: " + studentId);
 		}
-		
-		return apiStudent;
 	}
 	
+	// De-commision this method in favour of the next 
 	private Student internalGetStudent(String studentId, String accountNumber) {
-		StudentEntity studentEnt = repo.findByStudentID(studentId);
+		Optional<StudentEntity> studentEnt = repo.findByStudentId(studentId);
 		
-		Student apiStudent = mapper.entityToApi(studentEnt);
-		
-		if(apiStudent != null) {
+		if(studentEnt.isPresent()) {
+			Student apiStudent = mapper.entityToApi(studentEnt.get());
 			apiStudent.setServiceAddress(serviceUtil.getServiceAddress());
+			
+			return apiStudent;
 		} else {
 			throw new NotFoundException("No Student was found for Student ID: " + studentId);
 		}
 		
-		return apiStudent;
+	}
+	
+	private Student internalGetStudentValidity(String studentId, String accountNumber) {
+		Optional<StudentEntity> studentEnt = repo.findByStudentIdAndAccountNumber(studentId, accountNumber);
+		
+		if(studentEnt.isPresent()) {
+			Student apiStudent = mapper.entityToApi(studentEnt.get());
+			apiStudent.setServiceAddress(serviceUtil.getServiceAddress());
+			
+			return apiStudent;
+		} else {
+			throw new NotFoundException("No Student was found for Student ID: " + studentId);
+		}
+		
 	}
 	
 	private Student internalCreateStudent(Student body) {

@@ -5,6 +5,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import com.bank.services.api.GenericProcessingResponse;
+import com.bank.services.api.PaymentNotificationDetails;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -43,19 +46,19 @@ public interface IPaymentService {
 			@ApiResponse(responseCode = "404", description = "${api.responseCodes.notFound.description}"),
 	})
 	@GetMapping(value = "/xyz/payments/{paymentRef}", produces = "application/json")
-	Mono<Payment> getPayment(@PathVariable String paymentRef);
+	Mono<Payment> getPayment(@PathVariable long paymentId);
 	
 	// Will be called after consuming SAVE_TO_DB event
 	@Operation(
 			summary = "${api.payments.add-payment.summary}",
 			description = "${api.payments.add-payment.description}")
-	@ApiResponses(value = {
+	@ApiResponses(value = {	
 			@ApiResponse(responseCode = "200", description = "${api.responseCodes.ok.description}"),
 			@ApiResponse(responseCode = "400", description = "${api.responseCodes.badRequest.description}"),
 			@ApiResponse(responseCode = "404", description = "${api.responseCodes.notFound.description}"),
 	})
 	@PostMapping(value = "/xyz/payments", consumes = "application/json", produces = "application/json")
-	Mono<Payment> addPayment(@RequestBody Payment body);
+	Mono<GenericProcessingResponse> addPayment(@RequestBody PaymentNotificationDetails body);
 	
 	@Operation(
 			summary = "${api.payments.get-payment-all.summary}",
@@ -65,5 +68,5 @@ public interface IPaymentService {
 			@ApiResponse(responseCode = "400", description = "${api.responseCodes.badRequest.description}")	
 	})
 	@GetMapping(value = "/xyz/payments", produces = "application/json")
-	Flux<Payment> getAllPayment();
+	Flux<Payment> getAllPayments();
 }
