@@ -1,1 +1,1 @@
-INSERT INTO bank_clients (CLIENT_ID, INSTITUTION_NAME, VALIDATION_ENDPOINT, PAYMENT_NOTIFICATION_EP) values ("xyz-university", "XYZ University of Technology", "http://xyz-gateway-service:8080/xyz/students/validate", "http://xyz-gateway-service:8080/xyz/notify-payment");
+INSERT INTO bank_clients (CLIENT_ID, INSTITUTION_NAME, VALIDATION_ENDPOINT, PAYMENT_NOTIFICATION_EP) values ("xyz-university", "XYZ University of Technology", "http://xyz-gateway-service:8080/xyz/students/validate", "http://xyz-gateway-service:8080/xyz/payment-notifications");

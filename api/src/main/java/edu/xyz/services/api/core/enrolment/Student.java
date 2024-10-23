@@ -85,4 +85,10 @@ public class Student {
 	public void setAccountNumber(String accountNumber) {
 		this.accountNumber = accountNumber;
 	}
+
+	@Override
+	public String toString() {
+		return "Student [studentID=" + studentID + ", firstName=" + firstName + ", lastName=" + lastName + ", status="
+				+ status + ", accountNumber=" + accountNumber + ", serviceAddress=" + serviceAddress + "]";
+	}
 }

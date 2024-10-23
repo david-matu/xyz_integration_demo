@@ -140,23 +140,10 @@ public class BankServicesIntegrationAPI implements BankServiceIntegration {
 		
 		if(client.isPresent()) {
 			LOG.info("Found Client: \n ID: {} \n name: {} \n Validation URL: {}", validateRequest.getInstitutionId(), client.get().getInstitutionName(), client.get().getValidationEndpoint());
-			
+			LOG.info("Will log Validate Request: \n{}", validateRequest.toString());
 			// Send the validation request to the endpoint
 			String validateEP = client.get().getValidationEndpoint();
 			
-			/*
-			uri(url)
-				.contentType(MediaType.APPLICATION_JSON)
-				.bodyValue(details)
-				.retrieve()
-				.bodyToMono(GenericProcessingResponse.class)
-				.onErrorResume(ex -> {
-					return Mono.just(new GenericProcessingResponse("Server Error", "There was an error serving Student Validation request: " + ex.getMessage()));
-				})
-				.log(LOG.getName(), FINE)
-				.onErrorMap(WebClientResponseException.class, ex -> handleException(ex));
-			*/
-			// if(validateEP != null || !validateEP.isBlank()) {
 			if((validateEP != null) && (validateEP.isBlank() ? false : true)) {
 				LOG.debug("Will call validation endpoint on client API on URL: {}", validateEP);
 				LOG.info("Calling Student Validation EP at {}", client.get().getValidationEndpoint());
@@ -204,16 +191,17 @@ public class BankServicesIntegrationAPI implements BankServiceIntegration {
 		return Mono.fromCallable(() -> internalGetBankClient(body.getInstitutionId()))
 				.flatMap(b -> {
 					// Determine if is not null
+					
 					if (b != null) {
-		                   // Perform your action here (fw, etc.)
-		                   LOG.info("Found BankClient: {}, to send the payment notification", b.getInstitution());
-		                   
-		                   return sendPaymentNotificationToExternalEndpoint(body.getPaymentDetails(), b.getPaymentNotificationUrl());
-		               } else {
-		                   // If null, you could throw an exception or return an alternative value
-		                   // throw new NotFoundException("BankClient is null");
-		                   return Mono.just(new GenericProcessingResponse("FAILED", "Client not ready for operation"));
-		               }
+	                   // Perform your action here (fw, etc.)
+	                   LOG.info("Found BankClient: {}, to send the payment notification", b.getInstitution());
+	                   
+	                   return sendPaymentNotificationToExternalEndpoint(body.getPaymentDetails(), b.getPaymentNotificationUrl());
+	               } else {
+	                   // If null, you could throw an exception or return an alternative value
+	                   // throw new NotFoundException("BankClient is null");
+	                   return Mono.just(new GenericProcessingResponse("FAILED", "Client not ready for operation"));
+	               }
 				})
 				.log(LOG.getName(), FINE)
 				.subscribeOn(jdbcScheduler);
@@ -226,18 +214,24 @@ public class BankServicesIntegrationAPI implements BankServiceIntegration {
 	 *
 	 * 	
 	 */
-	private Mono<GenericProcessingResponse> sendPaymentNotificationToExternalEndpoint(String paymentNotificationUrl, PaymentNotificationDetails paymentDetails) {
-		return sendPaymentNotificationToExternalEndpoint(paymentDetails, paymentNotificationUrl);
-		
-	}
-	
 	private Mono<GenericProcessingResponse> sendPaymentNotificationToExternalEndpoint(PaymentNotificationDetails paymentDetails, String paymentNotificationUrl) {
-		
-		return webClient.post()
+		LOG.info("Just before sending Payment Details to the client: " + paymentDetails.toString());
+		return webClient
+				.post()
 				.uri(paymentNotificationUrl)
 				.bodyValue(paymentDetails)
 				.retrieve()
 				.bodyToMono(GenericProcessingResponse.class)
+				.map(e -> {
+					if(e.getResponseStatus().equalsIgnoreCase("ACCEPTED")) {
+						LOG.info("Payment notification has been accepted by the client for Student ID ({})", paymentDetails.getStudentId());
+						
+						return (new GenericProcessingResponse("ACCEPTED", String.format("Payment notification received by client for Student ID: %s and Payment reference: %s", paymentDetails.getStudentId(), paymentDetails.getPaymentReference())));
+					} else {
+	                    // Return a default response when not "ACCEPTED"
+	                    return new GenericProcessingResponse("FAILED", String.format("Payment notification not received for Student ID: %s and Payment reference: %s", paymentDetails.getStudentId(), paymentDetails.getPaymentReference()));
+	                }
+				})
 				.log(LOG.getName(), FINE)
 				.onErrorResume(ex -> {
 					return Mono.just(new GenericProcessingResponse("Server Error", "There was an error posting payment notification to client: " + ex.getMessage()));
@@ -275,7 +269,7 @@ public class BankServicesIntegrationAPI implements BankServiceIntegration {
 			LOG.info("Found Client for ID: {}, name: {}", clientId, client.get().getInstitutionName());
 			String notifEP = client.get().getPaymentNotificationEndpoint();
 			if(notifEP != null | !notifEP.isBlank()) {
-				
+				return bankClientMapper.entityToApi(client.get());
 			}
 		} else {
 			throw new NotFoundException("Did not find Institution with id: " + clientId);
@@ -285,8 +279,6 @@ public class BankServicesIntegrationAPI implements BankServiceIntegration {
 	}
 	
 	// Refactor the following code
-	
-	
 	private List<BankClient> internalGetBankClients() {
 		List<BankClientEntity> entityList = new ArrayList<>();
 		

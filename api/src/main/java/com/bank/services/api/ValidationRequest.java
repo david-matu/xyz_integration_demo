@@ -52,4 +52,10 @@ public class ValidationRequest implements Serializable {
 	public void setPaymentDetails(ValidationPaymentDetails paymentDetails) {
 		this.paymentDetails = paymentDetails;
 	}
+
+	@Override
+	public String toString() {
+		return "ValidationRequest [requestId=" + requestId + ", institutionId=" + institutionId + ", paymentDetails="
+				+ paymentDetails.toString() + "]";
+	}
 }

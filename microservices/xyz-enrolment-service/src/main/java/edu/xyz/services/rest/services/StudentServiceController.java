@@ -85,12 +85,12 @@ public class StudentServiceController implements StudentService {
 		return Mono.fromCallable(() -> internalGetStudent(details.getStudentId()))
 				.map(stud -> {
 					// DEtermine the enrolment status of the student and respond accordingly
-					LOG.info("Validating Student enrolment status: {}", stud.getStatus());
+					LOG.info("Validating Student enrolment status: {}\nStudent: {}", stud.getStatus(), stud.toString());
 					
 					// Besides returning enrolment status, Should we tell the client when the account number is valid or invalid?
 					
 					if(stud.getStatus().equalsIgnoreCase("ENROLLED")) {
-						if(stud.getAccountNumber() == details.getAccountNumber()) {
+						if(stud.getAccountNumber().equals(details.getAccountNumber())) {
 							return new GenericProcessingResponse("ENROLLED", "Student " + stud.getFirstName() + " with id " + stud.getStudentID() + " is valid"); // Too much information, but for proof-of-concept purpose
 						} else {
 							return new GenericProcessingResponse("ENROLLED_INVALID_ACCOUNT_NUMBER", "Student (" + stud.getFirstName() + ") with id " + stud.getStudentID() + " is not eligible for specified account (" + details.getAccountNumber() + ")");

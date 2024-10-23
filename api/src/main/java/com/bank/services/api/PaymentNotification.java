@@ -21,9 +21,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 public class PaymentNotification {
 	
-	@JsonProperty(value = "payment_ref")
-	private String paymentRef;
-	
 	@JsonProperty(value = "institution_id")
 	private String institutionId;
 	
@@ -35,19 +32,10 @@ public class PaymentNotification {
 
 	public PaymentNotification() {}
 	
-	public PaymentNotification(String paymentRef, String institutionId, PaymentNotificationDetails details, String callbackUrl) {
-		this.paymentRef = paymentRef;
+	public PaymentNotification(String institutionId, PaymentNotificationDetails details, String callbackUrl) {
 		this.institutionId = institutionId;
 		this.paymentDetails = details;
 		this.callbackUrl = callbackUrl;
-	}
-
-	public String getPaymentRef() {
-		return paymentRef;
-	}
-
-	public void setPaymentRef(String paymentRef) {
-		this.paymentRef = paymentRef;
 	}
 
 	public String getInstitutionId() {

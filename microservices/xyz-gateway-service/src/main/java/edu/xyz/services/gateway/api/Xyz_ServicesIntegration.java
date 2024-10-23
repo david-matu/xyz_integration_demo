@@ -104,7 +104,6 @@ public class Xyz_ServicesIntegration implements StudentService , IPaymentService
 	
 	@Override
 	public Mono<GenericProcessingResponse> getValidStudent(ValidationPaymentDetails details) {
-		//String url = studentServiceUrl + "/" + details.getStudentId() + "/" + details.getAccountNumber();
 		
 		String url = studentServiceUrl + "/validate";
 		LOG.debug("Will call StudentService Validation API on URL: {}", url);
@@ -201,47 +200,4 @@ public class Xyz_ServicesIntegration implements StudentService , IPaymentService
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
-	/*
-	 * 
-	@Override
-	public Flux<Payment> getPaymentsByStudentID(String studentId) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Mono<Payment> getPayment(String paymentRef) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	**
-	 * Use this method to forward the Payment notification to the xyz-payment-service
-	 *
-	@Override
-	public Mono<Payment> addPayment(Payment body) {
-		String url = studentServiceUrl + "/validate";
-		LOG.debug("Will call StudentService Validation API on URL: {}", url);
-		
-		return webClient
-				.post()
-				.uri(url)
-				.contentType(MediaType.APPLICATION_JSON)
-				.bodyValue(details)
-				.retrieve()
-				.bodyToMono(GenericProcessingResponse.class)
-				.onErrorResume(ex -> {
-					return Mono.just(new GenericProcessingResponse("Server Error", "There was an error serving Student Validation request: " + ex.getMessage()));
-				})
-				.log(LOG.getName(), FINE)
-				.onErrorMap(WebClientResponseException.class, ex -> handleException(ex));
-	}
-
-	@Override
-	public Flux<Payment> getAllPayment() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	*/
 }

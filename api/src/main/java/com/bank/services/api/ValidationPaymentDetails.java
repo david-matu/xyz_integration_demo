@@ -2,6 +2,8 @@ package com.bank.services.api;
 
 import java.io.Serializable;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  * This is a sub-object that is comes as 'payment_details' like in the example json below:
  * 
@@ -15,8 +17,10 @@ import java.io.Serializable;
 }
  */
 public class ValidationPaymentDetails implements Serializable {
-	
+	@JsonProperty(value = "student_id")
 	String studentId;
+	
+	@JsonProperty(value = "account_number")
 	String accountNumber;
 	
 	public ValidationPaymentDetails() {}

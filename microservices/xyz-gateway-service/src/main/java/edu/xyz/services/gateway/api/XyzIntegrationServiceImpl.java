@@ -94,6 +94,7 @@ public class XyzIntegrationServiceImpl implements XyzIntegrationService {
 	// POST
 	@Override
 	public Mono<GenericProcessingResponse> receivePaymentNotification(PaymentNotificationDetails body) {
+		LOG.info("Received Payment Notification: " + body.toString());
 		return integration.addPayment(body);
 	}
 }
