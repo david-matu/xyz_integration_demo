@@ -67,7 +67,7 @@ api:
    summary: Add new Payment notification record
    description: Creates a entity in the database
   
-  get-payments-all:
+  get-payment-all:
    summary: Fetch all Payment Notifications
    description: Returns a list of all payments that were saved successfully in the database
         

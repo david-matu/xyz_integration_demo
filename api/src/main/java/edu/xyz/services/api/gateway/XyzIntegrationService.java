@@ -9,6 +9,7 @@ import com.bank.services.api.GenericProcessingResponse;
 import com.bank.services.api.PaymentNotificationDetails;
 import com.bank.services.api.ValidationPaymentDetails;
 
+import edu.xyz.services.api.gateway.payments.Payment;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -84,4 +85,43 @@ public interface XyzIntegrationService {
 	@PostMapping(value = "/xyz/payment-notifications", produces = "application/json")
 	Mono<GenericProcessingResponse> receivePaymentNotification(@RequestBody PaymentNotificationDetails body);
 	
+	@Operation(summary = "${api.payments.get-payment-all.summary}", description = "${api.payments.get-payment-all.description}")
+	@ApiResponses(value = {
+		@ApiResponse(responseCode = "200", description = "${api.responseCodes.ok.description}"),
+		@ApiResponse(responseCode = "400", description = "${api.responseCodes.badRequest.description}"),
+		@ApiResponse(responseCode = "404", description = "${api.responseCodes.notFound.description}"),
+	})
+	@GetMapping(value = "/xyz/payments", produces = "application/json")
+	Flux<Payment> getPayments();
+	
+	@Operation(
+			summary = "${api.payments.get-payment-by-id.summary}",
+			description = "${api.payments.get-payment-by-id.description}")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "200", description = "${api.responseCodes.ok.description}"),
+			@ApiResponse(responseCode = "400", description = "${api.responseCodes.badRequest.description}"),
+			@ApiResponse(responseCode = "404", description = "${api.responseCodes.notFound.description}"),
+	})
+	@GetMapping(value = "/xyz/payments/{paymentId}", produces = "application/json")
+	Mono<Payment> getPaymentByPaymentId(@PathVariable String paymentId);
+	
+	@Operation(
+			summary = "${api.payments.get-payment-by-external-ref.summary}",
+			description = "${api.payments.get-payment-by-external-ref.description}")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "200", description = "${api.responseCodes.ok.description}"),
+			@ApiResponse(responseCode = "400", description = "${api.responseCodes.badRequest.description}"),
+			@ApiResponse(responseCode = "404", description = "${api.responseCodes.notFound.description}"),
+	})
+	@GetMapping(value = "/xyz/payments/external-ref/{externalReference}", produces = "application/json")
+	Mono<Payment> getPaymentByExternalRef(@PathVariable String externalReference);
+	
+	@Operation(summary = "${api.payments.get-payments-by-studentId.summary}", description = "${api.payments.get-payments-by-studentId.description}")
+	@ApiResponses(value = {
+		@ApiResponse(responseCode = "200", description = "${api.responseCodes.ok.description}"),
+		@ApiResponse(responseCode = "400", description = "${api.responseCodes.badRequest.description}"),
+		@ApiResponse(responseCode = "404", description = "${api.responseCodes.notFound.description}"),
+	})
+	@GetMapping(value = "/xyz/payments/student/{studentId}", produces = "application/json")
+	Flux<Payment> getPaymentsByStudentId(@PathVariable String studentId);
 }

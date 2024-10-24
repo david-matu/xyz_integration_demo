@@ -34,7 +34,7 @@ public interface IPaymentService {
 	 * 	@param accountNumber
 	 * 	@return
 	 */
-	@GetMapping(value = "/xyz/payments/{studentId}", produces = "application/json")
+	@GetMapping(value = "/xyz/payments/student/{studentId}", produces = "application/json")
 	Flux<Payment> getPaymentsByStudentID(@PathVariable String studentId);
 	
 	@Operation(
@@ -45,8 +45,19 @@ public interface IPaymentService {
 			@ApiResponse(responseCode = "400", description = "${api.responseCodes.badRequest.description}"),
 			@ApiResponse(responseCode = "404", description = "${api.responseCodes.notFound.description}"),
 	})
-	@GetMapping(value = "/xyz/payments/{paymentRef}", produces = "application/json")
+	@GetMapping(value = "/xyz/payments/{paymentId}", produces = "application/json")
 	Mono<Payment> getPayment(@PathVariable long paymentId);
+	
+	@Operation(
+			summary = "${api.payments.get-payment.summary}",
+			description = "${api.payments.get-payment.description}")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "200", description = "${api.responseCodes.ok.description}"),
+			@ApiResponse(responseCode = "400", description = "${api.responseCodes.badRequest.description}"),
+			@ApiResponse(responseCode = "404", description = "${api.responseCodes.notFound.description}"),
+	})
+	@GetMapping(value = "/xyz/payments/external-ref/{externalRef}", produces = "application/json")
+	Mono<Payment> getPaymentByExternalRef(@PathVariable String externalRef);
 	
 	// Will be called after consuming SAVE_TO_DB event
 	@Operation(

@@ -54,7 +54,7 @@ public class BankServicesIntegrationAPI implements BankServiceIntegration {
 	
 	private final WebClient webClient;
 	
-	// Inject connection pool to handle database requests and not block other threads that are running for other requests
+	// Inject connection pool to handle database requests and not block/ interrupt other threads that are running for other concurrent requests
 	private final Scheduler jdbcScheduler;
 	
 	private final PaymentNotificationRepository paymentsRepo;
@@ -193,12 +193,10 @@ public class BankServicesIntegrationAPI implements BankServiceIntegration {
 					// Determine if is not null
 					
 					if (b != null) {
-	                   // Perform your action here (fw, etc.)
 	                   LOG.info("Found BankClient: {}, to send the payment notification", b.getInstitution());
 	                   
-	                   return sendPaymentNotificationToExternalEndpoint(body.getPaymentDetails(), b.getPaymentNotificationUrl());
+	                   return sendPaymentNotificationToExternalEndpoint(body, b.getPaymentNotificationUrl());
 	               } else {
-	                   // If null, you could throw an exception or return an alternative value
 	                   // throw new NotFoundException("BankClient is null");
 	                   return Mono.just(new GenericProcessingResponse("FAILED", "Client not ready for operation"));
 	               }
@@ -211,25 +209,31 @@ public class BankServicesIntegrationAPI implements BankServiceIntegration {
 	 *  Do the actual sending of the notification to the endpoint
 	 *
 	 *	We expect the client (xyz pmt notification api) to return a message in the format:
-	 *
+	 *	{
+		    "responseStatus": "ACCEPTED",
+		    "responseMessage": "Payment notification received by client for Student ID: BE232 and Payment reference: REF-123-FROM-SYS-INTERNAL-2024-2"
+		}
 	 * 	
 	 */
-	private Mono<GenericProcessingResponse> sendPaymentNotificationToExternalEndpoint(PaymentNotificationDetails paymentDetails, String paymentNotificationUrl) {
-		LOG.info("Just before sending Payment Details to the client: " + paymentDetails.toString());
+	private Mono<GenericProcessingResponse> sendPaymentNotificationToExternalEndpoint(PaymentNotification paymentDetails, String paymentNotificationUrl) {
+		LOG.info("Just before sending Payment Details to the client: " + paymentDetails.getPaymentDetails().toString());
+		
+		PaymentNotificationEntity ent = paymentNotificationMapper.apiToEntity(paymentDetails);
+		
 		return webClient
 				.post()
 				.uri(paymentNotificationUrl)
-				.bodyValue(paymentDetails)
+				.bodyValue(paymentDetails.getPaymentDetails())
 				.retrieve()
 				.bodyToMono(GenericProcessingResponse.class)
 				.map(e -> {
 					if(e.getResponseStatus().equalsIgnoreCase("ACCEPTED")) {
-						LOG.info("Payment notification has been accepted by the client for Student ID ({})", paymentDetails.getStudentId());
+						LOG.info("Payment notification has been accepted by the client for Student ID ({})", paymentDetails.getPaymentDetails().getStudentId());
 						
-						return (new GenericProcessingResponse("ACCEPTED", String.format("Payment notification received by client for Student ID: %s and Payment reference: %s", paymentDetails.getStudentId(), paymentDetails.getPaymentReference())));
+						return (new GenericProcessingResponse("ACCEPTED", String.format("Payment notification received by client for Student ID: %s and Payment reference: %s", paymentDetails.getPaymentDetails().getStudentId(), paymentDetails.getPaymentDetails().getPaymentReference())));
 					} else {
 	                    // Return a default response when not "ACCEPTED"
-	                    return new GenericProcessingResponse("FAILED", String.format("Payment notification not received for Student ID: %s and Payment reference: %s", paymentDetails.getStudentId(), paymentDetails.getPaymentReference()));
+	                    return new GenericProcessingResponse("FAILED", String.format("Payment notification not received for Student ID: %s and Payment reference: %s", paymentDetails.getPaymentDetails().getStudentId(), paymentDetails.getPaymentDetails().getPaymentReference()));
 	                }
 				})
 				.log(LOG.getName(), FINE)

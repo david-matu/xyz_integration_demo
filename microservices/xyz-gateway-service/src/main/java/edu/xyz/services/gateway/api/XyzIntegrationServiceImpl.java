@@ -14,6 +14,7 @@ import com.bank.services.api.ValidationPaymentDetails;
 
 import edu.xyz.services.api.gateway.StudentInfo;
 import edu.xyz.services.api.gateway.XyzIntegrationService;
+import edu.xyz.services.api.gateway.payments.Payment;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -78,17 +79,6 @@ public class XyzIntegrationServiceImpl implements XyzIntegrationService {
 		LOG.info("Will validate Student info for Student ID={}, account number: {}", body.getStudentId(), body.getAccountNumber());
 		
 		return integration.getValidStudent(body);
-				/*
-				.flatMap(student -> {
-					if(student != null) {
-						return Mono.just(new GenericProcessingResponse("ENROLLED", "Student account is active and ready to receive payment"));
-					} else {
-						return Mono.just(new GenericProcessingResponse("NOT_FOUND", "Cannot verify given account"));
-					}
-				})
-				.doOnError(ex -> LOG.warn("An error occurred while validating student: ", ex.getMessage()))
-				.log(LOG.getName(), FINE);
-				*/
 	}
 
 	// POST
@@ -96,5 +86,25 @@ public class XyzIntegrationServiceImpl implements XyzIntegrationService {
 	public Mono<GenericProcessingResponse> receivePaymentNotification(PaymentNotificationDetails body) {
 		LOG.info("Received Payment Notification: " + body.toString());
 		return integration.addPayment(body);
+	}
+	
+	@Override
+	public Flux<Payment> getPayments() {
+		return integration.getAllPayments();
+	}
+
+	@Override
+	public Mono<Payment> getPaymentByPaymentId(String paymentId) {
+		return integration.getPayment(Long.parseLong(paymentId));
+	}
+
+	@Override
+	public Mono<Payment> getPaymentByExternalRef(String externalReference) {
+		return integration.getPaymentByExternalRef(externalReference);
+	}
+
+	@Override
+	public Flux<Payment> getPaymentsByStudentId(String studentId) {
+		return integration.getPaymentsByStudentID(studentId);
 	}
 }

@@ -1,0 +1,1664 @@
+{
+	"info": {
+		"_postman_id": "efeaac54-ce8d-4e12-8623-0e25f22d8f19",
+		"name": "XYZ-Integrations",
+		"description": "Entails APIs hosted by the microservices integration. For complete information, lookout [https://github.com/david-matu/xyz_integration_demo](https://github.com/david-matu/xyz_integration_demo)",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "38530558"
+	},
+	"item": [
+		{
+			"name": "xyz",
+			"item": [
+				{
+					"name": "students",
+					"item": [
+						{
+							"name": "validate",
+							"item": [
+								{
+									"name": "Validate the enrolment status of a Student",
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											},
+											{
+												"key": "Accept",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"student_id\": \"<string>\",\n  \"account_number\": \"<string>\"\n}",
+											"options": {
+												"raw": {
+													"headerFamily": "json",
+													"language": "json"
+												}
+											}
+										},
+										"url": "{{baseUrl}}/xyz/students/validate",
+										"description": "Returns the enrolment status of a given student. \n\nThis resource expects __student_id__ and __account_number__ to validate the student \n"
+									},
+									"response": [
+										{
+											"name": "OK",
+											"originalRequest": {
+												"method": "POST",
+												"header": [
+													{
+														"key": "Content-Type",
+														"value": "application/json"
+													},
+													{
+														"key": "Accept",
+														"value": "application/json"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n  \"student_id\": \"<string>\",\n  \"account_number\": \"<string>\"\n}",
+													"options": {
+														"raw": {
+															"headerFamily": "json",
+															"language": "json"
+														}
+													}
+												},
+												"url": "{{baseUrl}}/xyz/students/validate"
+											},
+											"status": "OK",
+											"code": 200,
+											"_postman_previewlanguage": "json",
+											"header": [
+												{
+													"key": "Content-Type",
+													"value": "application/json"
+												}
+											],
+											"cookie": [],
+											"body": "{\n  \"responseStatus\": \"<string>\",\n  \"responseMessage\": \"<string>\"\n}"
+										},
+										{
+											"name": "Bad Request, invalid format of the request. See response message for more information",
+											"originalRequest": {
+												"method": "POST",
+												"header": [
+													{
+														"key": "Content-Type",
+														"value": "application/json"
+													},
+													{
+														"key": "Accept",
+														"value": "*/*"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n  \"student_id\": \"<string>\",\n  \"account_number\": \"<string>\"\n}",
+													"options": {
+														"raw": {
+															"headerFamily": "json",
+															"language": "json"
+														}
+													}
+												},
+												"url": "{{baseUrl}}/xyz/students/validate"
+											},
+											"status": "Bad Request",
+											"code": 400,
+											"_postman_previewlanguage": "text",
+											"header": [
+												{
+													"key": "Content-Type",
+													"value": "*/*"
+												}
+											],
+											"cookie": [],
+											"body": "{\n  \"timestamp\": \"<dateTime>\",\n  \"path\": \"<string>\",\n  \"httpStatus\": \"510 NOT_EXTENDED\",\n  \"message\": \"<string>\"\n}"
+										},
+										{
+											"name": "Not found. The specified id does not exist",
+											"originalRequest": {
+												"method": "POST",
+												"header": [
+													{
+														"key": "Content-Type",
+														"value": "application/json"
+													},
+													{
+														"key": "Accept",
+														"value": "*/*"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n  \"student_id\": \"<string>\",\n  \"account_number\": \"<string>\"\n}",
+													"options": {
+														"raw": {
+															"headerFamily": "json",
+															"language": "json"
+														}
+													}
+												},
+												"url": "{{baseUrl}}/xyz/students/validate"
+											},
+											"status": "Not Found",
+											"code": 404,
+											"_postman_previewlanguage": "text",
+											"header": [
+												{
+													"key": "Content-Type",
+													"value": "*/*"
+												}
+											],
+											"cookie": [],
+											"body": "{\n  \"timestamp\": \"<dateTime>\",\n  \"path\": \"<string>\",\n  \"httpStatus\": \"510 NOT_EXTENDED\",\n  \"message\": \"<string>\"\n}"
+										},
+										{
+											"name": "Unprocessable Entity",
+											"originalRequest": {
+												"method": "POST",
+												"header": [
+													{
+														"key": "Content-Type",
+														"value": "application/json"
+													},
+													{
+														"key": "Accept",
+														"value": "*/*"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n  \"student_id\": \"<string>\",\n  \"account_number\": \"<string>\"\n}",
+													"options": {
+														"raw": {
+															"headerFamily": "json",
+															"language": "json"
+														}
+													}
+												},
+												"url": "{{baseUrl}}/xyz/students/validate"
+											},
+											"status": "Unprocessable Entity (WebDAV) (RFC 4918)",
+											"code": 422,
+											"_postman_previewlanguage": "text",
+											"header": [
+												{
+													"key": "Content-Type",
+													"value": "*/*"
+												}
+											],
+											"cookie": [],
+											"body": "{\n  \"timestamp\": \"<dateTime>\",\n  \"path\": \"<string>\",\n  \"httpStatus\": \"510 NOT_EXTENDED\",\n  \"message\": \"<string>\"\n}"
+										}
+									]
+								}
+							]
+						},
+						{
+							"name": "{studentId}",
+							"item": [
+								{
+									"name": "Get a Student record by passing ID",
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json"
+											}
+										],
+										"url": {
+											"raw": "{{baseUrl}}/xyz/students/:studentId",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"xyz",
+												"students",
+												":studentId"
+											],
+											"variable": [
+												{
+													"key": "studentId",
+													"value": "<string>",
+													"description": "(Required) "
+												}
+											]
+										},
+										"description": "# Normal response\n200 - OK - When a Student is returned, it indicates payment can be made for them since they are active\n\n200 - OK - but empty object\nThis is the case when the StudentID does not reflect a particular Student record, or the Student is no longer marked _ACTIVE_ in the institution\n"
+									},
+									"response": [
+										{
+											"name": "OK",
+											"originalRequest": {
+												"method": "GET",
+												"header": [
+													{
+														"key": "Accept",
+														"value": "application/json"
+													}
+												],
+												"url": {
+													"raw": "{{baseUrl}}/xyz/students/:studentId",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"xyz",
+														"students",
+														":studentId"
+													],
+													"variable": [
+														{
+															"key": "studentId"
+														}
+													]
+												}
+											},
+											"status": "OK",
+											"code": 200,
+											"_postman_previewlanguage": "json",
+											"header": [
+												{
+													"key": "Content-Type",
+													"value": "application/json"
+												}
+											],
+											"cookie": [],
+											"body": "{\n  \"studentID\": \"<string>\",\n  \"firstName\": \"<string>\",\n  \"lastName\": \"<string>\"\n}"
+										},
+										{
+											"name": "Bad Request, invalid format of the request. See response message for more information",
+											"originalRequest": {
+												"method": "GET",
+												"header": [
+													{
+														"key": "Accept",
+														"value": "*/*"
+													}
+												],
+												"url": {
+													"raw": "{{baseUrl}}/xyz/students/:studentId",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"xyz",
+														"students",
+														":studentId"
+													],
+													"variable": [
+														{
+															"key": "studentId"
+														}
+													]
+												}
+											},
+											"status": "Bad Request",
+											"code": 400,
+											"_postman_previewlanguage": "text",
+											"header": [
+												{
+													"key": "Content-Type",
+													"value": "*/*"
+												}
+											],
+											"cookie": [],
+											"body": "{\n  \"timestamp\": \"<dateTime>\",\n  \"path\": \"<string>\",\n  \"httpStatus\": \"510 NOT_EXTENDED\",\n  \"message\": \"<string>\"\n}"
+										},
+										{
+											"name": "Not found. The specified id does not exist",
+											"originalRequest": {
+												"method": "GET",
+												"header": [
+													{
+														"key": "Accept",
+														"value": "*/*"
+													}
+												],
+												"url": {
+													"raw": "{{baseUrl}}/xyz/students/:studentId",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"xyz",
+														"students",
+														":studentId"
+													],
+													"variable": [
+														{
+															"key": "studentId"
+														}
+													]
+												}
+											},
+											"status": "Not Found",
+											"code": 404,
+											"_postman_previewlanguage": "text",
+											"header": [
+												{
+													"key": "Content-Type",
+													"value": "*/*"
+												}
+											],
+											"cookie": [],
+											"body": "{\n  \"timestamp\": \"<dateTime>\",\n  \"path\": \"<string>\",\n  \"httpStatus\": \"510 NOT_EXTENDED\",\n  \"message\": \"<string>\"\n}"
+										},
+										{
+											"name": "Unprocessable Entity",
+											"originalRequest": {
+												"method": "GET",
+												"header": [
+													{
+														"key": "Accept",
+														"value": "*/*"
+													}
+												],
+												"url": {
+													"raw": "{{baseUrl}}/xyz/students/:studentId",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"xyz",
+														"students",
+														":studentId"
+													],
+													"variable": [
+														{
+															"key": "studentId"
+														}
+													]
+												}
+											},
+											"status": "Unprocessable Entity (WebDAV) (RFC 4918)",
+											"code": 422,
+											"_postman_previewlanguage": "text",
+											"header": [
+												{
+													"key": "Content-Type",
+													"value": "*/*"
+												}
+											],
+											"cookie": [],
+											"body": "{\n  \"timestamp\": \"<dateTime>\",\n  \"path\": \"<string>\",\n  \"httpStatus\": \"510 NOT_EXTENDED\",\n  \"message\": \"<string>\"\n}"
+										}
+									]
+								}
+							]
+						},
+						{
+							"name": "Fetch all Students",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"url": "{{baseUrl}}/xyz/students",
+								"description": "Returns a list of all students available,  and who are capable of being identified with payments made for"
+							},
+							"response": [
+								{
+									"name": "OK",
+									"originalRequest": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json"
+											}
+										],
+										"url": "{{baseUrl}}/xyz/students"
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										}
+									],
+									"cookie": [],
+									"body": "[\n  {\n    \"studentID\": \"<string>\",\n    \"firstName\": \"<string>\",\n    \"lastName\": \"<string>\"\n  },\n  {\n    \"studentID\": \"<string>\",\n    \"firstName\": \"<string>\",\n    \"lastName\": \"<string>\"\n  }\n]"
+								},
+								{
+									"name": "Bad Request, invalid format of the request. See response message for more information",
+									"originalRequest": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "*/*"
+											}
+										],
+										"url": "{{baseUrl}}/xyz/students"
+									},
+									"status": "Bad Request",
+									"code": 400,
+									"_postman_previewlanguage": "text",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "*/*"
+										}
+									],
+									"cookie": [],
+									"body": "{\n  \"timestamp\": \"<dateTime>\",\n  \"path\": \"<string>\",\n  \"httpStatus\": \"510 NOT_EXTENDED\",\n  \"message\": \"<string>\"\n}"
+								},
+								{
+									"name": "Not found. The specified id does not exist",
+									"originalRequest": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "*/*"
+											}
+										],
+										"url": "{{baseUrl}}/xyz/students"
+									},
+									"status": "Not Found",
+									"code": 404,
+									"_postman_previewlanguage": "text",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "*/*"
+										}
+									],
+									"cookie": [],
+									"body": "{\n  \"timestamp\": \"<dateTime>\",\n  \"path\": \"<string>\",\n  \"httpStatus\": \"510 NOT_EXTENDED\",\n  \"message\": \"<string>\"\n}"
+								},
+								{
+									"name": "Unprocessable Entity",
+									"originalRequest": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "*/*"
+											}
+										],
+										"url": "{{baseUrl}}/xyz/students"
+									},
+									"status": "Unprocessable Entity (WebDAV) (RFC 4918)",
+									"code": 422,
+									"_postman_previewlanguage": "text",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "*/*"
+										}
+									],
+									"cookie": [],
+									"body": "{\n  \"timestamp\": \"<dateTime>\",\n  \"path\": \"<string>\",\n  \"httpStatus\": \"510 NOT_EXTENDED\",\n  \"message\": \"<string>\"\n}"
+								}
+							]
+						},
+						{
+							"name": "Add new Student",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"studentID\": \"<string>\",\n  \"firstName\": \"<string>\",\n  \"lastName\": \"<string>\"\n}",
+									"options": {
+										"raw": {
+											"headerFamily": "json",
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{baseUrl}}/xyz/students",
+								"description": "Create Student profile in the database"
+							},
+							"response": [
+								{
+									"name": "OK",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											},
+											{
+												"key": "Accept",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"studentID\": \"<string>\",\n  \"firstName\": \"<string>\",\n  \"lastName\": \"<string>\"\n}",
+											"options": {
+												"raw": {
+													"headerFamily": "json",
+													"language": "json"
+												}
+											}
+										},
+										"url": "{{baseUrl}}/xyz/students"
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										}
+									],
+									"cookie": [],
+									"body": "{\n  \"studentID\": \"<string>\",\n  \"firstName\": \"<string>\",\n  \"lastName\": \"<string>\"\n}"
+								},
+								{
+									"name": "Bad Request, invalid format of the request. See response message for more information",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											},
+											{
+												"key": "Accept",
+												"value": "*/*"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"studentID\": \"<string>\",\n  \"firstName\": \"<string>\",\n  \"lastName\": \"<string>\"\n}",
+											"options": {
+												"raw": {
+													"headerFamily": "json",
+													"language": "json"
+												}
+											}
+										},
+										"url": "{{baseUrl}}/xyz/students"
+									},
+									"status": "Bad Request",
+									"code": 400,
+									"_postman_previewlanguage": "text",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "*/*"
+										}
+									],
+									"cookie": [],
+									"body": "{\n  \"timestamp\": \"<dateTime>\",\n  \"path\": \"<string>\",\n  \"httpStatus\": \"510 NOT_EXTENDED\",\n  \"message\": \"<string>\"\n}"
+								},
+								{
+									"name": "Not found. The specified id does not exist",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											},
+											{
+												"key": "Accept",
+												"value": "*/*"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"studentID\": \"<string>\",\n  \"firstName\": \"<string>\",\n  \"lastName\": \"<string>\"\n}",
+											"options": {
+												"raw": {
+													"headerFamily": "json",
+													"language": "json"
+												}
+											}
+										},
+										"url": "{{baseUrl}}/xyz/students"
+									},
+									"status": "Not Found",
+									"code": 404,
+									"_postman_previewlanguage": "text",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "*/*"
+										}
+									],
+									"cookie": [],
+									"body": "{\n  \"timestamp\": \"<dateTime>\",\n  \"path\": \"<string>\",\n  \"httpStatus\": \"510 NOT_EXTENDED\",\n  \"message\": \"<string>\"\n}"
+								},
+								{
+									"name": "Unprocessable Entity",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											},
+											{
+												"key": "Accept",
+												"value": "*/*"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"studentID\": \"<string>\",\n  \"firstName\": \"<string>\",\n  \"lastName\": \"<string>\"\n}",
+											"options": {
+												"raw": {
+													"headerFamily": "json",
+													"language": "json"
+												}
+											}
+										},
+										"url": "{{baseUrl}}/xyz/students"
+									},
+									"status": "Unprocessable Entity (WebDAV) (RFC 4918)",
+									"code": 422,
+									"_postman_previewlanguage": "text",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "*/*"
+										}
+									],
+									"cookie": [],
+									"body": "{\n  \"timestamp\": \"<dateTime>\",\n  \"path\": \"<string>\",\n  \"httpStatus\": \"510 NOT_EXTENDED\",\n  \"message\": \"<string>\"\n}"
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "payment-notifications",
+					"item": [
+						{
+							"name": "Post a payment notification",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"currency\": \"<string>\",\n  \"branch\": \"<string>\",\n  \"payment_ref\": \"<string>\",\n  \"student_id\": \"<string>\",\n  \"first_name\": \"<string>\",\n  \"last_name\": \"<string>\",\n  \"account_number\": \"<string>\",\n  \"amount_paid\": \"<double>\",\n  \"date_paid\": \"<dateTime>\"\n}",
+									"options": {
+										"raw": {
+											"headerFamily": "json",
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{baseUrl}}/xyz/payment-notifications",
+								"description": "Send a notification of payments to XYZ Finance for processing of tuition fees"
+							},
+							"response": [
+								{
+									"name": "OK",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											},
+											{
+												"key": "Accept",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"currency\": \"<string>\",\n  \"branch\": \"<string>\",\n  \"payment_ref\": \"<string>\",\n  \"student_id\": \"<string>\",\n  \"first_name\": \"<string>\",\n  \"last_name\": \"<string>\",\n  \"account_number\": \"<string>\",\n  \"amount_paid\": \"<double>\",\n  \"date_paid\": \"<dateTime>\"\n}",
+											"options": {
+												"raw": {
+													"headerFamily": "json",
+													"language": "json"
+												}
+											}
+										},
+										"url": "{{baseUrl}}/xyz/payment-notifications"
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										}
+									],
+									"cookie": [],
+									"body": "{\n  \"responseStatus\": \"<string>\",\n  \"responseMessage\": \"<string>\"\n}"
+								},
+								{
+									"name": "Bad Request, invalid format of the request. See response message for more information",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											},
+											{
+												"key": "Accept",
+												"value": "*/*"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"currency\": \"<string>\",\n  \"branch\": \"<string>\",\n  \"payment_ref\": \"<string>\",\n  \"student_id\": \"<string>\",\n  \"first_name\": \"<string>\",\n  \"last_name\": \"<string>\",\n  \"account_number\": \"<string>\",\n  \"amount_paid\": \"<double>\",\n  \"date_paid\": \"<dateTime>\"\n}",
+											"options": {
+												"raw": {
+													"headerFamily": "json",
+													"language": "json"
+												}
+											}
+										},
+										"url": "{{baseUrl}}/xyz/payment-notifications"
+									},
+									"status": "Bad Request",
+									"code": 400,
+									"_postman_previewlanguage": "text",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "*/*"
+										}
+									],
+									"cookie": [],
+									"body": "{\n  \"timestamp\": \"<dateTime>\",\n  \"path\": \"<string>\",\n  \"httpStatus\": \"510 NOT_EXTENDED\",\n  \"message\": \"<string>\"\n}"
+								},
+								{
+									"name": "Not found. The specified id does not exist",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											},
+											{
+												"key": "Accept",
+												"value": "*/*"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"currency\": \"<string>\",\n  \"branch\": \"<string>\",\n  \"payment_ref\": \"<string>\",\n  \"student_id\": \"<string>\",\n  \"first_name\": \"<string>\",\n  \"last_name\": \"<string>\",\n  \"account_number\": \"<string>\",\n  \"amount_paid\": \"<double>\",\n  \"date_paid\": \"<dateTime>\"\n}",
+											"options": {
+												"raw": {
+													"headerFamily": "json",
+													"language": "json"
+												}
+											}
+										},
+										"url": "{{baseUrl}}/xyz/payment-notifications"
+									},
+									"status": "Not Found",
+									"code": 404,
+									"_postman_previewlanguage": "text",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "*/*"
+										}
+									],
+									"cookie": [],
+									"body": "{\n  \"timestamp\": \"<dateTime>\",\n  \"path\": \"<string>\",\n  \"httpStatus\": \"510 NOT_EXTENDED\",\n  \"message\": \"<string>\"\n}"
+								},
+								{
+									"name": "Unprocessable Entity",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											},
+											{
+												"key": "Accept",
+												"value": "*/*"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"currency\": \"<string>\",\n  \"branch\": \"<string>\",\n  \"payment_ref\": \"<string>\",\n  \"student_id\": \"<string>\",\n  \"first_name\": \"<string>\",\n  \"last_name\": \"<string>\",\n  \"account_number\": \"<string>\",\n  \"amount_paid\": \"<double>\",\n  \"date_paid\": \"<dateTime>\"\n}",
+											"options": {
+												"raw": {
+													"headerFamily": "json",
+													"language": "json"
+												}
+											}
+										},
+										"url": "{{baseUrl}}/xyz/payment-notifications"
+									},
+									"status": "Unprocessable Entity (WebDAV) (RFC 4918)",
+									"code": 422,
+									"_postman_previewlanguage": "text",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "*/*"
+										}
+									],
+									"cookie": [],
+									"body": "{\n  \"timestamp\": \"<dateTime>\",\n  \"path\": \"<string>\",\n  \"httpStatus\": \"510 NOT_EXTENDED\",\n  \"message\": \"<string>\"\n}"
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "payments",
+					"item": [
+						{
+							"name": "{paymentId}",
+							"item": [
+								{
+									"name": "${api.payments.get-payment-by-id.summary}",
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json"
+											}
+										],
+										"url": {
+											"raw": "{{baseUrl}}/xyz/payments/:paymentId",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"xyz",
+												"payments",
+												":paymentId"
+											],
+											"variable": [
+												{
+													"key": "paymentId",
+													"value": "<string>",
+													"description": "(Required) "
+												}
+											]
+										},
+										"description": "${api.payments.get-payment-by-id.description}"
+									},
+									"response": [
+										{
+											"name": "OK",
+											"originalRequest": {
+												"method": "GET",
+												"header": [
+													{
+														"key": "Accept",
+														"value": "application/json"
+													}
+												],
+												"url": {
+													"raw": "{{baseUrl}}/xyz/payments/:paymentId",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"xyz",
+														"payments",
+														":paymentId"
+													],
+													"variable": [
+														{
+															"key": "paymentId"
+														}
+													]
+												}
+											},
+											"status": "OK",
+											"code": 200,
+											"_postman_previewlanguage": "json",
+											"header": [
+												{
+													"key": "Content-Type",
+													"value": "application/json"
+												}
+											],
+											"cookie": [],
+											"body": "{\n  \"paymentID\": \"<long>\",\n  \"externalReference\": \"<string>\",\n  \"forInvoiceId\": \"<string>\",\n  \"studentId\": \"<string>\",\n  \"amounPaid\": \"<double>\",\n  \"datePaid\": \"<dateTime>\",\n  \"accountNumber\": \"<string>\",\n  \"comment\": \"<string>\"\n}"
+										},
+										{
+											"name": "Bad Request, invalid format of the request. See response message for more information",
+											"originalRequest": {
+												"method": "GET",
+												"header": [
+													{
+														"key": "Accept",
+														"value": "*/*"
+													}
+												],
+												"url": {
+													"raw": "{{baseUrl}}/xyz/payments/:paymentId",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"xyz",
+														"payments",
+														":paymentId"
+													],
+													"variable": [
+														{
+															"key": "paymentId"
+														}
+													]
+												}
+											},
+											"status": "Bad Request",
+											"code": 400,
+											"_postman_previewlanguage": "text",
+											"header": [
+												{
+													"key": "Content-Type",
+													"value": "*/*"
+												}
+											],
+											"cookie": [],
+											"body": "{\n  \"timestamp\": \"<dateTime>\",\n  \"path\": \"<string>\",\n  \"httpStatus\": \"510 NOT_EXTENDED\",\n  \"message\": \"<string>\"\n}"
+										},
+										{
+											"name": "Not found. The specified id does not exist",
+											"originalRequest": {
+												"method": "GET",
+												"header": [
+													{
+														"key": "Accept",
+														"value": "*/*"
+													}
+												],
+												"url": {
+													"raw": "{{baseUrl}}/xyz/payments/:paymentId",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"xyz",
+														"payments",
+														":paymentId"
+													],
+													"variable": [
+														{
+															"key": "paymentId"
+														}
+													]
+												}
+											},
+											"status": "Not Found",
+											"code": 404,
+											"_postman_previewlanguage": "text",
+											"header": [
+												{
+													"key": "Content-Type",
+													"value": "*/*"
+												}
+											],
+											"cookie": [],
+											"body": "{\n  \"timestamp\": \"<dateTime>\",\n  \"path\": \"<string>\",\n  \"httpStatus\": \"510 NOT_EXTENDED\",\n  \"message\": \"<string>\"\n}"
+										},
+										{
+											"name": "Unprocessable Entity",
+											"originalRequest": {
+												"method": "GET",
+												"header": [
+													{
+														"key": "Accept",
+														"value": "*/*"
+													}
+												],
+												"url": {
+													"raw": "{{baseUrl}}/xyz/payments/:paymentId",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"xyz",
+														"payments",
+														":paymentId"
+													],
+													"variable": [
+														{
+															"key": "paymentId"
+														}
+													]
+												}
+											},
+											"status": "Unprocessable Entity (WebDAV) (RFC 4918)",
+											"code": 422,
+											"_postman_previewlanguage": "text",
+											"header": [
+												{
+													"key": "Content-Type",
+													"value": "*/*"
+												}
+											],
+											"cookie": [],
+											"body": "{\n  \"timestamp\": \"<dateTime>\",\n  \"path\": \"<string>\",\n  \"httpStatus\": \"510 NOT_EXTENDED\",\n  \"message\": \"<string>\"\n}"
+										}
+									]
+								}
+							]
+						},
+						{
+							"name": "student",
+							"item": [
+								{
+									"name": "{studentId}",
+									"item": [
+										{
+											"name": "${api.payments.get-payments-by-studentId.summary}",
+											"request": {
+												"method": "GET",
+												"header": [
+													{
+														"key": "Accept",
+														"value": "application/json"
+													}
+												],
+												"url": {
+													"raw": "{{baseUrl}}/xyz/payments/student/:studentId",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"xyz",
+														"payments",
+														"student",
+														":studentId"
+													],
+													"variable": [
+														{
+															"key": "studentId",
+															"value": "<string>",
+															"description": "(Required) "
+														}
+													]
+												},
+												"description": "${api.payments.get-payments-by-studentId.description}"
+											},
+											"response": [
+												{
+													"name": "OK",
+													"originalRequest": {
+														"method": "GET",
+														"header": [
+															{
+																"key": "Accept",
+																"value": "application/json"
+															}
+														],
+														"url": {
+															"raw": "{{baseUrl}}/xyz/payments/student/:studentId",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"xyz",
+																"payments",
+																"student",
+																":studentId"
+															],
+															"variable": [
+																{
+																	"key": "studentId"
+																}
+															]
+														}
+													},
+													"status": "OK",
+													"code": 200,
+													"_postman_previewlanguage": "json",
+													"header": [
+														{
+															"key": "Content-Type",
+															"value": "application/json"
+														}
+													],
+													"cookie": [],
+													"body": "[\n  {\n    \"paymentID\": \"<long>\",\n    \"externalReference\": \"<string>\",\n    \"forInvoiceId\": \"<string>\",\n    \"studentId\": \"<string>\",\n    \"amounPaid\": \"<double>\",\n    \"datePaid\": \"<dateTime>\",\n    \"accountNumber\": \"<string>\",\n    \"comment\": \"<string>\"\n  },\n  {\n    \"paymentID\": \"<long>\",\n    \"externalReference\": \"<string>\",\n    \"forInvoiceId\": \"<string>\",\n    \"studentId\": \"<string>\",\n    \"amounPaid\": \"<double>\",\n    \"datePaid\": \"<dateTime>\",\n    \"accountNumber\": \"<string>\",\n    \"comment\": \"<string>\"\n  }\n]"
+												},
+												{
+													"name": "Bad Request, invalid format of the request. See response message for more information",
+													"originalRequest": {
+														"method": "GET",
+														"header": [
+															{
+																"key": "Accept",
+																"value": "*/*"
+															}
+														],
+														"url": {
+															"raw": "{{baseUrl}}/xyz/payments/student/:studentId",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"xyz",
+																"payments",
+																"student",
+																":studentId"
+															],
+															"variable": [
+																{
+																	"key": "studentId"
+																}
+															]
+														}
+													},
+													"status": "Bad Request",
+													"code": 400,
+													"_postman_previewlanguage": "text",
+													"header": [
+														{
+															"key": "Content-Type",
+															"value": "*/*"
+														}
+													],
+													"cookie": [],
+													"body": "{\n  \"timestamp\": \"<dateTime>\",\n  \"path\": \"<string>\",\n  \"httpStatus\": \"510 NOT_EXTENDED\",\n  \"message\": \"<string>\"\n}"
+												},
+												{
+													"name": "Not found. The specified id does not exist",
+													"originalRequest": {
+														"method": "GET",
+														"header": [
+															{
+																"key": "Accept",
+																"value": "*/*"
+															}
+														],
+														"url": {
+															"raw": "{{baseUrl}}/xyz/payments/student/:studentId",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"xyz",
+																"payments",
+																"student",
+																":studentId"
+															],
+															"variable": [
+																{
+																	"key": "studentId"
+																}
+															]
+														}
+													},
+													"status": "Not Found",
+													"code": 404,
+													"_postman_previewlanguage": "text",
+													"header": [
+														{
+															"key": "Content-Type",
+															"value": "*/*"
+														}
+													],
+													"cookie": [],
+													"body": "{\n  \"timestamp\": \"<dateTime>\",\n  \"path\": \"<string>\",\n  \"httpStatus\": \"510 NOT_EXTENDED\",\n  \"message\": \"<string>\"\n}"
+												},
+												{
+													"name": "Unprocessable Entity",
+													"originalRequest": {
+														"method": "GET",
+														"header": [
+															{
+																"key": "Accept",
+																"value": "*/*"
+															}
+														],
+														"url": {
+															"raw": "{{baseUrl}}/xyz/payments/student/:studentId",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"xyz",
+																"payments",
+																"student",
+																":studentId"
+															],
+															"variable": [
+																{
+																	"key": "studentId"
+																}
+															]
+														}
+													},
+													"status": "Unprocessable Entity (WebDAV) (RFC 4918)",
+													"code": 422,
+													"_postman_previewlanguage": "text",
+													"header": [
+														{
+															"key": "Content-Type",
+															"value": "*/*"
+														}
+													],
+													"cookie": [],
+													"body": "{\n  \"timestamp\": \"<dateTime>\",\n  \"path\": \"<string>\",\n  \"httpStatus\": \"510 NOT_EXTENDED\",\n  \"message\": \"<string>\"\n}"
+												}
+											]
+										}
+									]
+								}
+							]
+						},
+						{
+							"name": "external-ref",
+							"item": [
+								{
+									"name": "{externalReference}",
+									"item": [
+										{
+											"name": "${api.payments.get-payment-by-external-ref.summary}",
+											"request": {
+												"method": "GET",
+												"header": [
+													{
+														"key": "Accept",
+														"value": "application/json"
+													}
+												],
+												"url": {
+													"raw": "{{baseUrl}}/xyz/payments/external-ref/:externalReference",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"xyz",
+														"payments",
+														"external-ref",
+														":externalReference"
+													],
+													"variable": [
+														{
+															"key": "externalReference",
+															"value": "<string>",
+															"description": "(Required) "
+														}
+													]
+												},
+												"description": "${api.payments.get-payment-by-external-ref.description}"
+											},
+											"response": [
+												{
+													"name": "OK",
+													"originalRequest": {
+														"method": "GET",
+														"header": [
+															{
+																"key": "Accept",
+																"value": "application/json"
+															}
+														],
+														"url": {
+															"raw": "{{baseUrl}}/xyz/payments/external-ref/:externalReference",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"xyz",
+																"payments",
+																"external-ref",
+																":externalReference"
+															],
+															"variable": [
+																{
+																	"key": "externalReference"
+																}
+															]
+														}
+													},
+													"status": "OK",
+													"code": 200,
+													"_postman_previewlanguage": "json",
+													"header": [
+														{
+															"key": "Content-Type",
+															"value": "application/json"
+														}
+													],
+													"cookie": [],
+													"body": "{\n  \"paymentID\": \"<long>\",\n  \"externalReference\": \"<string>\",\n  \"forInvoiceId\": \"<string>\",\n  \"studentId\": \"<string>\",\n  \"amounPaid\": \"<double>\",\n  \"datePaid\": \"<dateTime>\",\n  \"accountNumber\": \"<string>\",\n  \"comment\": \"<string>\"\n}"
+												},
+												{
+													"name": "Bad Request, invalid format of the request. See response message for more information",
+													"originalRequest": {
+														"method": "GET",
+														"header": [
+															{
+																"key": "Accept",
+																"value": "*/*"
+															}
+														],
+														"url": {
+															"raw": "{{baseUrl}}/xyz/payments/external-ref/:externalReference",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"xyz",
+																"payments",
+																"external-ref",
+																":externalReference"
+															],
+															"variable": [
+																{
+																	"key": "externalReference"
+																}
+															]
+														}
+													},
+													"status": "Bad Request",
+													"code": 400,
+													"_postman_previewlanguage": "text",
+													"header": [
+														{
+															"key": "Content-Type",
+															"value": "*/*"
+														}
+													],
+													"cookie": [],
+													"body": "{\n  \"timestamp\": \"<dateTime>\",\n  \"path\": \"<string>\",\n  \"httpStatus\": \"510 NOT_EXTENDED\",\n  \"message\": \"<string>\"\n}"
+												},
+												{
+													"name": "Not found. The specified id does not exist",
+													"originalRequest": {
+														"method": "GET",
+														"header": [
+															{
+																"key": "Accept",
+																"value": "*/*"
+															}
+														],
+														"url": {
+															"raw": "{{baseUrl}}/xyz/payments/external-ref/:externalReference",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"xyz",
+																"payments",
+																"external-ref",
+																":externalReference"
+															],
+															"variable": [
+																{
+																	"key": "externalReference"
+																}
+															]
+														}
+													},
+													"status": "Not Found",
+													"code": 404,
+													"_postman_previewlanguage": "text",
+													"header": [
+														{
+															"key": "Content-Type",
+															"value": "*/*"
+														}
+													],
+													"cookie": [],
+													"body": "{\n  \"timestamp\": \"<dateTime>\",\n  \"path\": \"<string>\",\n  \"httpStatus\": \"510 NOT_EXTENDED\",\n  \"message\": \"<string>\"\n}"
+												},
+												{
+													"name": "Unprocessable Entity",
+													"originalRequest": {
+														"method": "GET",
+														"header": [
+															{
+																"key": "Accept",
+																"value": "*/*"
+															}
+														],
+														"url": {
+															"raw": "{{baseUrl}}/xyz/payments/external-ref/:externalReference",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"xyz",
+																"payments",
+																"external-ref",
+																":externalReference"
+															],
+															"variable": [
+																{
+																	"key": "externalReference"
+																}
+															]
+														}
+													},
+													"status": "Unprocessable Entity (WebDAV) (RFC 4918)",
+													"code": 422,
+													"_postman_previewlanguage": "text",
+													"header": [
+														{
+															"key": "Content-Type",
+															"value": "*/*"
+														}
+													],
+													"cookie": [],
+													"body": "{\n  \"timestamp\": \"<dateTime>\",\n  \"path\": \"<string>\",\n  \"httpStatus\": \"510 NOT_EXTENDED\",\n  \"message\": \"<string>\"\n}"
+												}
+											]
+										}
+									]
+								}
+							]
+						},
+						{
+							"name": "${api.payments.get-payment-all.summary}",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"url": "{{baseUrl}}/xyz/payments",
+								"description": "${api.payments.get-payment-all.description}"
+							},
+							"response": [
+								{
+									"name": "OK",
+									"originalRequest": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json"
+											}
+										],
+										"url": "{{baseUrl}}/xyz/payments"
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										}
+									],
+									"cookie": [],
+									"body": "[\n  {\n    \"paymentID\": \"<long>\",\n    \"externalReference\": \"<string>\",\n    \"forInvoiceId\": \"<string>\",\n    \"studentId\": \"<string>\",\n    \"amounPaid\": \"<double>\",\n    \"datePaid\": \"<dateTime>\",\n    \"accountNumber\": \"<string>\",\n    \"comment\": \"<string>\"\n  },\n  {\n    \"paymentID\": \"<long>\",\n    \"externalReference\": \"<string>\",\n    \"forInvoiceId\": \"<string>\",\n    \"studentId\": \"<string>\",\n    \"amounPaid\": \"<double>\",\n    \"datePaid\": \"<dateTime>\",\n    \"accountNumber\": \"<string>\",\n    \"comment\": \"<string>\"\n  }\n]"
+								},
+								{
+									"name": "Bad Request, invalid format of the request. See response message for more information",
+									"originalRequest": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "*/*"
+											}
+										],
+										"url": "{{baseUrl}}/xyz/payments"
+									},
+									"status": "Bad Request",
+									"code": 400,
+									"_postman_previewlanguage": "text",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "*/*"
+										}
+									],
+									"cookie": [],
+									"body": "{\n  \"timestamp\": \"<dateTime>\",\n  \"path\": \"<string>\",\n  \"httpStatus\": \"510 NOT_EXTENDED\",\n  \"message\": \"<string>\"\n}"
+								},
+								{
+									"name": "Not found. The specified id does not exist",
+									"originalRequest": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "*/*"
+											}
+										],
+										"url": "{{baseUrl}}/xyz/payments"
+									},
+									"status": "Not Found",
+									"code": 404,
+									"_postman_previewlanguage": "text",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "*/*"
+										}
+									],
+									"cookie": [],
+									"body": "{\n  \"timestamp\": \"<dateTime>\",\n  \"path\": \"<string>\",\n  \"httpStatus\": \"510 NOT_EXTENDED\",\n  \"message\": \"<string>\"\n}"
+								},
+								{
+									"name": "Unprocessable Entity",
+									"originalRequest": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "*/*"
+											}
+										],
+										"url": "{{baseUrl}}/xyz/payments"
+									},
+									"status": "Unprocessable Entity (WebDAV) (RFC 4918)",
+									"code": 422,
+									"_postman_previewlanguage": "text",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "*/*"
+										}
+									],
+									"cookie": [],
+									"body": "{\n  \"timestamp\": \"<dateTime>\",\n  \"path\": \"<string>\",\n  \"httpStatus\": \"510 NOT_EXTENDED\",\n  \"message\": \"<string>\"\n}"
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "Post Payment Notification",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"payment_ref\": \"REF-123-FROM-SYS-INTERNAL-2024\",\n    \"student_id\": \"BE232\",\n    \"first_name\": \"David\",\n    \"last_name\": \"Matu\",\n    \"account_number\": \"10100\",\n    \"amount_paid\": \"56024.0\",\n    \"currency\": \"KES\",\n    \"date_paid\": \"2024-10-22T08:02:18.851Z\",\n    \"branch\": \"02\"\n}"
+						},
+						"url": "http://localhost:9000/xyz/payment-notifications"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Bank - Validation_Request",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"request_id\": \"123-10292-bbg28njag-fah-1284\",\n    \"payment_ref\": \"REF-123-FROM-SYS-INTERNAL-2024\",\n    \"institution_id\": \"xyz-university\",\n    \"payment_details\": {\n        \"student_id\": \"BE232\",\n        \"account_number\": \"10100\"\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:9090/bank/integration/validate-student"
+			},
+			"response": []
+		},
+		{
+			"name": "Bank-to-Client: Send Payment Notification",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "accept",
+						"value": "application/json"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"institution_id\": \"xyz-university\",\n    \"callback_url\": \"http://localhost:8080/bank-channel/callback-demo\",\n    \"payment_details\": {\n        \"payment_ref\": \"REF-123-FROM-SYS-INTERNAL-2024\",\n        \"student_id\": \"BE232\",\n        \"first_name\": \"David\",\n        \"last_name\": \"Matu\",\n        \"account_number\": \"10100\",\n        \"amount_paid\": \"56024.0\",\n        \"currency\": \"KES\",\n        \"date_paid\": \"2024-10-22T08:02:18.851Z\",\n        \"branch\": \"02\"\n    }\n}"
+				},
+				"url": "http://localhost:9000/xyz/payment-notifications"
+			},
+			"response": []
+		}
+	]
+}

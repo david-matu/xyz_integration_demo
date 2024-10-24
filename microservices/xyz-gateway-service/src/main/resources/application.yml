@@ -75,6 +75,12 @@ api:
   get-student-all:
    summary: Fetch all Students
    description: Returns a list of all students available,  and who are capable of being identified with payments made for
+  validations:
+    summary: Validate the enrolment status of a Student
+    description: |
+      Returns the enrolment status of a given student. 
+      
+      This resource expects __student_id__ and __account_number__ to validate the student 
  
  payment-service:
   post-payment-notification:

@@ -82,42 +82,6 @@ public class PaymentServiceController implements IPaymentService {
 				.subscribeOn(jdbcScheduler);
 	}
 	
-	private List<Payment> internalGetPaymentList() {
-		List<PaymentEntity> entityList = repo.findAll();
-		
-		List<Payment> list = pmtMapper.entityListToApiList(entityList);
-		
-		
-		LOG.debug("Payment List response size: {}", list.size());
-		
-		return list;
-	}
-
-	private Payment internalGetPayment(long paymentId) {
-		Optional<PaymentEntity> studentEnt = repo.findByPaymentId(paymentId);
-		
-		if(studentEnt.isPresent()) {
-			// Payment apiPayment = pmtMapper.entityToApi(studentEnt.get());
-			
-			return pmtMapper.entityToApi(studentEnt.get());
-		}
-		throw new NotFoundException("No Payment was found for Payment ID: " + paymentId);
-	}
-	
-	
-	private PaymentNotificationDetails internalCreatePayment(PaymentNotificationDetails body) {
-		try {
-			PaymentEntity entity = pmtMapper.notifDetailsToEntity(body); //.apiToEntity(body);
-			PaymentEntity newEntity = repo.save(entity);
-			
-			LOG.info("createPaymentNotification: created a Payment notification record: {}", body.getPaymentReference());
-			//return pmtMapper.entityToApi(newEntity);
-			return pmtMapper.entityToNotifDetails(newEntity);
-		} catch (DataIntegrityViolationException dive) {
-			throw new InvalidInputException("Duplicate key, Payment Id: " + body.getPaymentReference() + ", Payment Id: " + body.getPaymentReference());
-		}
-	}
-	
 	/*
 	@Override
 	public Flux<Payment> getAllPayments() {
@@ -132,16 +96,31 @@ public class PaymentServiceController implements IPaymentService {
 	
 	@Override
 	public Flux<Payment> getPaymentsByStudentID(String studentId) {
-		LOG.info("Fetching Payments for Student with id: {} \nThis feature is under development", studentId);
+		LOG.info("Fetching Payments for Student with id: {} \nThis feature is now complete", studentId);
 		
-		/*
-		return Mono.fromCallable(() -> internalGetPayment(paymentId))
-				.flatMap(e -> e.getAccountNumber())
+		return Mono.fromCallable(() -> internalGetPaymentListByStudentId(studentId))
+				.flatMapMany(stud -> Flux.fromIterable(stud))
 				.log(LOG.getName(), FINE)
 				.subscribeOn(jdbcScheduler);
-				*/
-		return Flux.empty();
 	}
+	
+	@Override
+	public Flux<Payment> getAllPayments() {
+		return Mono.fromCallable(() -> internalGetPaymentList())
+				.flatMapMany(stud -> Flux.fromIterable(stud))
+				.log(LOG.getName(), FINE)
+				.subscribeOn(jdbcScheduler);
+	}
+
+	@Override
+	public Mono<Payment> getPaymentByExternalRef(String externalRef) {
+		LOG.info("Fetching Payment by externalReference: {}", externalRef);
+		
+		return Mono.fromCallable(() -> internalGetPaymentByExternalReference(externalRef))
+				.log(LOG.getName(), FINE)
+				.subscribeOn(jdbcScheduler);
+	}
+	
 
 	/**
 	 * 	Overriding this method, will scrap it out later because the intention to save the notification is fulfilled by the payment notification consumer
@@ -168,12 +147,64 @@ public class PaymentServiceController implements IPaymentService {
 				})
 				.subscribeOn(jdbcScheduler);
 	}
-
-	@Override
-	public Flux<Payment> getAllPayments() {
-		// TODO Auto-generated method stub
-		return null;
+	
+	private List<Payment> internalGetPaymentList() {
+		List<PaymentEntity> entityList = repo.findAll();
+		
+		List<Payment> list = pmtMapper.entityListToApiList(entityList);
+		
+		
+		LOG.debug("Payment List response size: {}", list.size());
+		
+		return list;
 	}
+	
+	private List<Payment> internalGetPaymentListByStudentId(String studentId) {
+		List<PaymentEntity> entityList = repo.findByStudentId(studentId);
+		
+		List<Payment> list = pmtMapper.entityListToApiList(entityList);
+		
+		
+		LOG.debug("Payment List response size: {}", list.size());
+		
+		return list;
+	}
+	
+	private Payment internalGetPayment(long paymentId) {
+		Optional<PaymentEntity> studentEnt = repo.findByPaymentId(paymentId);
+		
+		if(studentEnt.isPresent()) {
+			// Payment apiPayment = pmtMapper.entityToApi(studentEnt.get());
+			
+			return pmtMapper.entityToApi(studentEnt.get());
+		}
+		throw new NotFoundException("No Payment was found for Payment ID: " + paymentId);
+	}
+	
+	private Payment internalGetPaymentByExternalReference(String externalReference) {
+		Optional<PaymentEntity> studentEnt = repo.findByExternalReference(externalReference);
+		
+		if(studentEnt.isPresent()) {
+			// Payment apiPayment = pmtMapper.entityToApi(studentEnt.get());
+			
+			return pmtMapper.entityToApi(studentEnt.get());
+		}
+		throw new NotFoundException("No Payment was found for External Reference: " + externalReference);
+	}
+	
+	private PaymentNotificationDetails internalCreatePayment(PaymentNotificationDetails body) {
+		try {
+			PaymentEntity entity = pmtMapper.notifDetailsToEntity(body); //.apiToEntity(body);
+			PaymentEntity newEntity = repo.save(entity);
+			
+			LOG.info("createPaymentNotification: created a Payment notification record: {}", body.getPaymentReference());
+			//return pmtMapper.entityToApi(newEntity);
+			return pmtMapper.entityToNotifDetails(newEntity);
+		} catch (DataIntegrityViolationException dive) {
+			throw new InvalidInputException("Duplicate key, Payment Id: " + body.getPaymentReference() + ", Payment Id: " + body.getPaymentReference());
+		}
+	}
+	
 
 	/**
 	 *	Commenting because this instance is already a message a consumer

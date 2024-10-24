@@ -46,6 +46,8 @@ public class Xyz_ServicesIntegration implements StudentService , IPaymentService
 	
 	private final String studentServiceUrl;
 	
+	private final String paymentServiceUrl;
+	
 	private final WebClient webClient;
 	
 	// Define a stream bridge that will send messages out to the messaging systems
@@ -62,7 +64,13 @@ public class Xyz_ServicesIntegration implements StudentService , IPaymentService
 			String studentServiceHost, 
 			
 			@Value("${app.student-service.port}") 
-			String studentServicePort) {
+			String studentServicePort,
+			
+			@Value("${app.payment-service.host}") 
+			String paymentServiceHost, 
+			
+			@Value("${app.payment-service.port}") 
+			String paymentServicePort) {
 		
 		this.publishEventScheduler = publishEventScheduler;
 		this.webClient = webClient.build();
@@ -70,8 +78,10 @@ public class Xyz_ServicesIntegration implements StudentService , IPaymentService
 		this.streamBridge = streamBridge;
 		
 		this.studentServiceUrl = "http://" + studentServiceHost + ":" + studentServicePort + "/students";
+		this.paymentServiceUrl = "http://" + paymentServiceHost + ":" + paymentServicePort + "/xyz/payments";
 		
 		LOG.info("Resolved Student service url: " + studentServiceUrl);
+		LOG.info("Resolved Payment service url: " + paymentServiceUrl);
 	}
 	
 	@Override
@@ -118,6 +128,55 @@ public class Xyz_ServicesIntegration implements StudentService , IPaymentService
 				.onErrorResume(ex -> {
 					return Mono.just(new GenericProcessingResponse("Server Error", "There was an error serving Student Validation request: " + ex.getMessage()));
 				})
+				.log(LOG.getName(), FINE)
+				.onErrorMap(WebClientResponseException.class, ex -> handleException(ex));
+	}
+	
+	@Override
+	public Flux<Payment> getPaymentsByStudentID(String studentId) {
+		String url = paymentServiceUrl + "/student/" + studentId;
+		
+		return webClient.get().uri(url).retrieve().bodyToFlux(Payment.class)
+				.log(LOG.getName(), FINE)
+				.onErrorResume(error -> empty());
+	}
+
+	@Override
+	public Mono<Payment> getPayment(long paymentId) {
+		String url = paymentServiceUrl + "/" + paymentId;
+		
+		return webClient.get().uri(url).retrieve().bodyToMono(Payment.class)
+				.log(LOG.getName(), FINE)
+				.onErrorMap(WebClientResponseException.class, ex -> handleException(ex));
+	}
+
+	// Push message to queue
+	@Override
+	public Mono<GenericProcessingResponse> addPayment(PaymentNotificationDetails body) {
+		
+		LOG.info("Received payment notification, proceeding to queue. \n{}", body.toString());
+		
+		return Mono.fromCallable(() -> {
+			sendMessage("payments-out-0", new Event(CREATE, body.getPaymentReference(), body));
+			
+			return new GenericProcessingResponse("ACCEPTED", "Message accepted for processing");
+		}).subscribeOn(publishEventScheduler);
+	}
+
+	@Override
+	public Flux<Payment> getAllPayments() {
+		String url = paymentServiceUrl;
+		
+		return webClient.get().uri(url).retrieve().bodyToFlux(Payment.class)
+				.log(LOG.getName(), FINE)
+				.onErrorResume(error -> empty());
+	}
+	
+	@Override
+	public Mono<Payment> getPaymentByExternalRef(String externalRef) {
+		String url = paymentServiceUrl + "/external-ref/" + externalRef;
+		
+		return webClient.get().uri(url).retrieve().bodyToMono(Payment.class)
 				.log(LOG.getName(), FINE)
 				.onErrorMap(WebClientResponseException.class, ex -> handleException(ex));
 	}
@@ -170,34 +229,4 @@ public class Xyz_ServicesIntegration implements StudentService , IPaymentService
 		}
 	}
 
-	@Override
-	public Flux<Payment> getPaymentsByStudentID(String studentId) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Mono<Payment> getPayment(long paymentId) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	// Push message to queue
-	@Override
-	public Mono<GenericProcessingResponse> addPayment(PaymentNotificationDetails body) {
-		
-		LOG.info("Received payment notification, proceeding to queue. \n{}", body.toString());
-		
-		return Mono.fromCallable(() -> {
-			sendMessage("payments-out-0", new Event(CREATE, body.getPaymentReference(), body));
-			
-			return new GenericProcessingResponse("ACCEPTED", "Message accepted for processing");
-		}).subscribeOn(publishEventScheduler);
-	}
-
-	@Override
-	public Flux<Payment> getAllPayments() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 }

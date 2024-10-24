@@ -80,7 +80,6 @@ public interface PaymentNotificationMapper {
     // Custom mapping for PaymentNotificationDetails -> String
     @Named("paymentNotificationDetailsToString")
     default String paymentNotificationDetailsToString(PaymentNotificationDetails details) {
-        // Assuming you want to convert it to JSON
         try {
             return new ObjectMapper().writeValueAsString(details);
         } catch (JsonProcessingException e) {
